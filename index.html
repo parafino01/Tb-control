@@ -4,156 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e293b">
-    <title>TB-CONTROL MAX</title>
-    <link rel="manifest" href="manifest.json">
+    <title>TB-CONTROL PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .modal-scroll { max-height: 90vh; overflow-y: auto; }
-        .paciente-card { transition: all 0.2s ease; border-radius: 2rem; }
-        .btn-floating { width: 5.5rem; height: 5.5rem; font-size: 3rem; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5); }
-        .alerta-card { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
-        /* Esconder app antes do login */
+        body { font-family: sans-serif; background-color: #f1f5f9; }
+        .paciente-card { transition: all 0.2s; border-radius: 2rem; background: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .modal-scroll { max-height: 90vh; overflow-y: auto; border-radius: 3rem; }
+        .btn-blue { background-color: #0ea5e9; color: white; border-radius: 1.5rem; font-weight: 900; }
         #appContent { display: none; }
+        /* Tamanho de fonte aumentado globalmente para leitura fácil */
+        html { font-size: 18px; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 font-sans">
+<body class="pb-32">
 
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-md rounded-[3rem] p-10 shadow-2xl text-center">
-            <div class="mb-8">
-                <div class="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">🔐</div>
-                <h2 class="font-black text-3xl text-slate-800 uppercase tracking-tighter">Acesso Restrito</h2>
-                <p class="text-slate-400 font-bold text-xs uppercase mt-2 tracking-widest">Unidade Sanitária de Vanduzi</p>
+        <div class="bg-white w-full max-w-lg rounded-[3.5rem] p-12 shadow-2xl text-center border-t-[15px] border-sky-500">
+            <div class="mb-10">
+                <div class="bg-sky-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">🔐</div>
+                <h2 class="font-black text-4xl text-slate-800 uppercase tracking-tighter">TB-CONTROL PRO</h2>
+                <p class="text-slate-400 font-bold text-sm uppercase mt-2">Vanduzi - Acesso Restrito</p>
             </div>
-            
-            <div class="space-y-4">
-                <input type="text" id="userLogin" placeholder="UTILIZADOR" 
-                    class="w-full border-4 border-slate-50 p-5 rounded-2xl bg-slate-50 outline-none font-black text-lg focus:border-blue-200 uppercase">
-                
-                <input type="password" id="passLogin" placeholder="PALAVRA-PASSE" 
-                    class="w-full border-4 border-slate-50 p-5 rounded-2xl bg-slate-50 outline-none font-black text-lg focus:border-blue-200">
-                
-                <button onclick="validarAcesso()" 
-                    class="w-full py-6 bg-blue-600 text-white rounded-2xl font-black text-xl uppercase shadow-xl active:scale-95 transition-all mt-4">
-                    Entrar no Sistema
-                </button>
+            <div class="space-y-6">
+                <input type="text" id="userLogin" placeholder="UTILIZADOR" class="w-full border-4 border-slate-100 p-6 rounded-3xl bg-slate-50 outline-none font-black text-xl focus:border-sky-300 uppercase">
+                <input type="password" id="passLogin" placeholder="SENHA" class="w-full border-4 border-slate-100 p-6 rounded-3xl bg-slate-50 outline-none font-black text-xl focus:border-sky-300">
+                <button onclick="validarAcesso()" class="w-full py-7 btn-blue text-2xl uppercase shadow-lg active:scale-95 transition-all">ENTRAR</button>
             </div>
-            <p id="loginErro" class="text-red-500 font-black text-xs mt-6 uppercase hidden italic">Credenciais Inválidas!</p>
         </div>
     </div>
 
     <div id="appContent">
-        <header class="bg-slate-900 p-8 text-white sticky top-0 z-10 shadow-2xl rounded-b-[3rem]">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="font-black text-3xl tracking-tighter italic text-blue-400">TB-CONTROL</h1>
+        <header class="bg-slate-900 p-8 text-white sticky top-0 z-10 shadow-2xl rounded-b-[3.5rem]">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="bg-sky-500 p-3 rounded-2xl text-2xl">🫁</div>
+                    <h1 class="font-black text-3xl italic tracking-tighter">TB-CONTROL <span class="text-sky-400">PRO</span></h1>
+                </div>
                 <div class="flex gap-4">
-                    <button onclick="exportarDados()" class="bg-slate-800 p-4 rounded-2xl text-xl border border-slate-700">📤</button>
-                    <button onclick="document.getElementById('fileInput').click()" class="bg-slate-800 p-4 rounded-2xl text-xl border border-slate-700">📥</button>
-                    <button onclick="logout()" class="bg-red-900/30 p-4 rounded-2xl text-xl border border-red-800/50">🚪</button>
-                    <input type="file" id="fileInput" class="hidden" accept=".json" onchange="importarDados(event)">
+                    <button onclick="exportarDados()" class="bg-slate-800 p-4 rounded-2xl text-2xl">📤</button>
+                    <button onclick="logout()" class="bg-red-900/40 p-4 rounded-2xl text-2xl border border-red-500/30">🚪</button>
                 </div>
             </div>
             
             <div class="grid grid-cols-3 gap-4">
-                <div class="bg-slate-800 p-5 rounded-[2rem] border-b-8 border-blue-500 text-center shadow-xl">
-                    <p class="text-xs font-black text-blue-300 uppercase mb-2">Total</p>
-                    <p id="dashTotal" class="text-4xl font-black">0</p>
+                <div class="bg-white/10 p-6 rounded-[2rem] border-b-8 border-sky-500 text-center">
+                    <p class="text-xs font-black text-sky-300 uppercase mb-2">Total</p>
+                    <p id="dashTotal" class="text-4xl font-black text-white">0</p>
                 </div>
-                <div class="bg-slate-800 p-5 rounded-[2rem] border-b-8 border-green-500 text-center shadow-xl">
-                    <p class="text-xs font-black text-green-300 uppercase mb-2">Sensível</p>
-                    <p id="dashSensivel" class="text-4xl font-black">0</p>
+                <div class="bg-white/10 p-6 rounded-[2rem] border-b-8 border-green-500 text-center">
+                    <p class="text-xs font-black text-green-300 uppercase mb-2">Ativos</p>
+                    <p id="dashAtivos" class="text-4xl font-black text-white">0</p>
                 </div>
-                <div class="bg-slate-800 p-5 rounded-[2rem] border-b-8 border-red-500 text-center shadow-xl">
+                <div class="bg-white/10 p-6 rounded-[2rem] border-b-8 border-red-500 text-center">
                     <p class="text-xs font-black text-red-300 uppercase mb-2">Resist.</p>
-                    <p id="dashResistente" class="text-4xl font-black">0</p>
+                    <p id="dashResistente" class="text-4xl font-black text-white">0</p>
                 </div>
             </div>
         </header>
 
-        <main class="p-6 pb-32">
-            <div id="painelAlertas" class="grid grid-cols-1 gap-4 mb-8"></div>
-            <div class="relative mb-10">
-                <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="PESQUISAR NOME OU NID..." 
-                    class="w-full bg-white border-4 border-white p-7 pl-16 rounded-[2.5rem] shadow-xl outline-none focus:border-blue-500 text-xl font-bold transition-all">
-                <span class="absolute left-6 top-7 text-3xl">🔍</span>
+        <main class="p-8">
+            <div id="painelAlertas" class="space-y-4 mb-10"></div>
+
+            <div class="relative mb-12">
+                <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="NID OU NOME DO PACIENTE..." 
+                    class="w-full bg-white border-4 border-white p-8 pl-20 rounded-[3rem] shadow-xl outline-none focus:border-sky-500 text-2xl font-black">
+                <span class="absolute left-8 top-8 text-4xl">🔍</span>
             </div>
-            <h2 id="tituloLista" class="text-xs font-black text-slate-400 mb-4 ml-4 uppercase tracking-[0.3em]">Lista de Pacientes</h2>
-            <div id="listaPacientes" class="space-y-6"></div>
+
+            <div class="flex justify-between items-center mb-6 px-4">
+                <h2 class="text-sm font-black text-slate-400 uppercase tracking-widest">Lista de Pacientes</h2>
+                <span id="contadorLista" class="text-sm font-bold bg-slate-200 px-4 py-1 rounded-full text-slate-600">0</span>
+            </div>
+
+            <div id="listaPacientes" class="space-y-8"></div>
         </main>
 
-        <button onclick="abrirModal()" class="btn-floating fixed bottom-10 right-10 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center z-20 active:bg-blue-800 transition-all">+</button>
+        <button onclick="abrirModal()" class="fixed bottom-10 right-10 w-24 h-24 bg-sky-500 text-white rounded-full shadow-2xl flex items-center justify-center text-6xl font-light active:scale-90 transition-all z-20">
+            +
+        </button>
     </div>
 
     <div id="modal" class="hidden fixed inset-0 bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-xl rounded-[3.5rem] p-10 shadow-2xl modal-scroll border-t-[12px] border-blue-600">
-            <div class="flex justify-between items-center mb-10 text-slate-800">
-                <h2 class="font-black text-3xl uppercase tracking-tighter">Novo Cadastro</h2>
-                <button onclick="fecharModal()" class="text-4xl text-slate-300">✕</button>
+        <div class="bg-white w-full max-w-xl p-10 shadow-2xl modal-scroll border-t-[15px] border-sky-500">
+            <div class="flex justify-between items-center mb-10">
+                <h2 id="modalTitulo" class="font-black text-3xl text-slate-800 uppercase italic">Novo Cadastro</h2>
+                <button onclick="fecharModal()" class="text-5xl text-slate-300">×</button>
             </div>
+
             <div class="space-y-6">
+                <input type="text" id="nome" placeholder="NOME COMPLETO" class="w-full border-4 border-slate-50 p-6 rounded-3xl bg-slate-50 font-black text-xl uppercase focus:border-sky-200">
+                
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="nid" placeholder="NID" class="w-full border-4 border-slate-50 p-5 rounded-3xl bg-slate-50 outline-none font-black text-lg focus:border-blue-100 uppercase">
-                    <input type="number" id="idade" placeholder="IDADE" class="w-full border-4 border-slate-50 p-5 rounded-3xl bg-slate-50 outline-none font-black text-lg">
+                    <input type="text" id="nid" placeholder="NID" class="w-full border-4 border-slate-50 p-6 rounded-3xl bg-slate-50 font-black text-xl uppercase">
+                    <input type="number" id="idade" placeholder="IDADE" class="w-full border-4 border-slate-50 p-6 rounded-3xl bg-slate-50 font-black text-xl">
                 </div>
-                <input type="text" id="nome" placeholder="NOME COMPLETO" class="w-full border-4 border-slate-50 p-6 rounded-3xl bg-slate-50 outline-none font-black text-xl uppercase">
+
                 <div class="grid grid-cols-2 gap-4">
-                    <select id="sexo" class="border-4 border-slate-50 p-5 rounded-3xl bg-slate-50 outline-none font-black text-lg">
-                        <option value="Masculino">♂ Masculino</option>
-                        <option value="Feminino">♀ Feminino</option>
+                    <select id="diagnostico" class="border-4 border-slate-50 p-6 rounded-3xl bg-slate-100 font-black text-lg">
+                        <option value="">DIAGNÓSTICO</option>
+                        <option value="Baciloscopia +">Baciloscopia +</option>
+                        <option value="GeneXpert">GeneXpert</option>
+                        <option value="Clínico">Clínico</option>
+                        <option value="Extra-Pulmonar">Extra-Pulmonar</option>
                     </select>
-                    <input type="tel" id="contacto" placeholder="TELEFONE" class="border-4 border-slate-50 p-5 rounded-3xl bg-slate-50 outline-none font-black text-lg">
+                    <select id="estado" class="border-4 border-slate-50 p-6 rounded-3xl bg-sky-50 font-black text-lg text-sky-700">
+                        <option value="Em Tratamento">🔄 TRATAMENTO</option>
+                        <option value="Curado">✅ CURADO</option>
+                        <option value="Abandono">⚠️ ABANDONO</option>
+                        <option value="Óbito">⚰️ ÓBITO</option>
+                        <option value="Transferido">✈️ TRANSFERIDO</option>
+                    </select>
                 </div>
-                <div class="p-8 bg-blue-50 rounded-[3rem] border-2 border-blue-100 space-y-6">
-                    <select id="tipo" onchange="atualizarRegimes()" class="w-full p-6 rounded-2xl bg-white shadow-lg font-black text-blue-700 text-xl border-none outline-none">
+
+                <div class="p-8 bg-sky-50 rounded-[3rem] border-2 border-sky-100 space-y-6">
+                    <select id="tipo" onchange="atualizarRegimes()" class="w-full p-6 rounded-2xl font-black text-2xl text-sky-800">
                         <option value="Sensível">🟢 TB SENSÍVEL</option>
                         <option value="Resistente">🔴 TB RESISTENTE</option>
                     </select>
-                    <select id="regime" class="w-full p-6 rounded-2xl bg-white shadow-lg font-black text-slate-700 text-lg border-none outline-none"></select>
+                    <select id="regime" class="w-full p-6 rounded-2xl font-black text-xl text-slate-600"></select>
                 </div>
-                <div class="space-y-2">
-                    <label class="font-black text-xs text-slate-400 ml-4 uppercase">Data de Início</label>
-                    <input type="date" id="dataInicio" class="w-full border-4 border-slate-50 p-6 rounded-3xl bg-slate-50 outline-none font-black text-2xl text-blue-600">
+
+                <div class="px-4">
+                    <label class="font-black text-xs text-slate-400 uppercase italic">Data de Início</label>
+                    <input type="date" id="dataInicio" class="w-full border-b-4 border-sky-500 p-4 font-black text-3xl text-sky-600 outline-none">
                 </div>
             </div>
-            <button onclick="salvarPaciente()" class="w-full mt-10 py-7 bg-blue-600 text-white rounded-[2rem] font-black text-2xl uppercase shadow-2xl">CADASTRAR AGORA</button>
+
+            <button onclick="salvarPaciente()" class="w-full mt-12 py-8 btn-blue text-2xl uppercase shadow-2xl active:scale-95">
+                CONFIRMAR DADOS
+            </button>
         </div>
     </div>
 
     <script>
-        // --- SISTEMA DE VALIDAÇÃO ---
-        const USER_CORRETO = "tbvanduzi";
-        const PASS_CORRETO = "2026";
+        let pacientes = JSON.parse(localStorage.getItem('tb_pacientes')) || [];
+        let editandoId = null;
 
         function validarAcesso() {
-            const user = document.getElementById('userLogin').value.toLowerCase();
-            const pass = document.getElementById('passLogin').value;
-            const erro = document.getElementById('loginErro');
-
-            if(user === USER_CORRETO && pass === PASS_CORRETO) {
+            if(document.getElementById('userLogin').value.toLowerCase() === "tbvanduzi" && document.getElementById('passLogin').value === "2026") {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
                 sessionStorage.setItem('logado', 'sim');
                 renderizar();
-            } else {
-                erro.classList.remove('hidden');
-                setTimeout(() => erro.classList.add('hidden'), 3000);
             }
         }
 
-        // Verifica se já estava logado nesta sessão
         if(sessionStorage.getItem('logado') === 'sim') {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appContent').style.display = 'block';
         }
 
-        function logout() {
-            sessionStorage.removeItem('logado');
-            location.reload();
-        }
-
-        // --- LÓGICA DO APP ---
-        let pacientes = JSON.parse(localStorage.getItem('tb_pacientes')) || [];
+        function logout() { sessionStorage.removeItem('logado'); location.reload(); }
 
         function atualizarRegimes() {
             const tipo = document.getElementById('tipo').value;
@@ -163,101 +164,132 @@
                 '<option value="BPaL">💊 BPaL (Resistente)</option>';
         }
 
-        function abrirModal() { document.getElementById('modal').classList.remove('hidden'); atualizarRegimes(); }
+        function abrirModal(id = null) {
+            editandoId = id;
+            if(id) {
+                const p = pacientes.find(p => p.id === id);
+                document.getElementById('nid').value = p.nid;
+                document.getElementById('nome').value = p.nome;
+                document.getElementById('idade').value = p.idade;
+                document.getElementById('diagnostico').value = p.diagnostico || "";
+                document.getElementById('estado').value = p.estado || "Em Tratamento";
+                document.getElementById('tipo').value = p.tipo;
+                document.getElementById('dataInicio').value = p.dataInicio;
+                document.getElementById('modalTitulo').innerText = "Atualizar Paciente";
+            } else {
+                document.getElementById('modalTitulo').innerText = "Novo Cadastro";
+                document.querySelectorAll('#modal input').forEach(i => i.value = '');
+            }
+            document.getElementById('modal').classList.remove('hidden');
+            atualizarRegimes();
+        }
+
         function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
 
         function salvarPaciente() {
             const p = {
-                id: Date.now(),
+                id: editandoId || Date.now(),
                 nid: document.getElementById('nid').value,
                 nome: document.getElementById('nome').value,
                 idade: document.getElementById('idade').value,
-                sexo: document.getElementById('sexo').value,
-                contacto: document.getElementById('contacto').value,
+                diagnostico: document.getElementById('diagnostico').value,
+                estado: document.getElementById('estado').value,
                 tipo: document.getElementById('tipo').value,
                 regime: document.getElementById('regime').value,
                 dataInicio: document.getElementById('dataInicio').value
             };
-            if (!p.nome || !p.dataInicio) return alert("Preencha Nome e Data!");
-            pacientes.push(p);
+            if (!p.nome || !p.dataInicio) return alert("Erro: Nome e Data são obrigatórios!");
+            
+            if(editandoId) {
+                const idx = pacientes.findIndex(item => item.id === editandoId);
+                pacientes[idx] = p;
+            } else {
+                pacientes.push(p);
+            }
+            
             localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-            fecharModal(); renderizar(); 
+            fecharModal(); renderizar();
         }
 
-        function renderizar(filtroManual = null) {
+        function renderizar(filtroAlerta = null) {
             if(sessionStorage.getItem('logado') !== 'sim') return;
-            
             const lista = document.getElementById('listaPacientes');
             const painel = document.getElementById('painelAlertas');
             const busca = document.getElementById('inputBusca').value.toLowerCase();
             const hoje = new Date();
 
-            const elegiveisFim = pacientes.filter(p => {
+            // Lógica de Alerta: Ignora ÓBITO e TRANSFERIDO
+            const elegiveis = pacientes.filter(p => {
                 const dias = Math.floor((hoje - new Date(p.dataInicio)) / 86400000);
-                return dias >= 180;
+                return p.estado === "Em Tratamento" && dias >= 180;
             });
 
-            const controlosHoje = pacientes.filter(p => {
+            const controlos = pacientes.filter(p => {
                 const dias = Math.floor((hoje - new Date(p.dataInicio)) / 86400000);
-                return (p.tipo === "Sensível" && (dias === 53 || dias === 145));
+                return p.estado === "Em Tratamento" && (dias === 53 || dias === 145);
             });
 
             painel.innerHTML = '';
-            if (elegiveisFim.length > 0) {
-                painel.innerHTML += `
-                    <div onclick="renderizar('fim')" class="alerta-card bg-orange-500 p-6 rounded-[2rem] text-white shadow-lg cursor-pointer flex justify-between items-center mb-2">
-                        <div><p class="font-black text-2xl">${elegiveisFim.length}</p><p class="font-bold text-[10px] uppercase">Elegíveis Fim de Tratamento</p></div>
-                        <span class="text-3xl">🏁</span>
-                    </div>`;
+            if(elegiveis.length > 0) {
+                painel.innerHTML += `<div onclick="renderizar('fim')" class="bg-orange-500 p-8 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center animate-pulse"><div><p class="font-black text-4xl">${elegiveis.length}</p><p class="font-bold text-sm uppercase">Fim de Tratamento (Elegíveis)</p></div><span class="text-5xl">🏁</span></div>`;
             }
-            if (controlosHoje.length > 0) {
-                painel.innerHTML += `
-                    <div onclick="renderizar('controlo')" class="alerta-card bg-blue-500 p-6 rounded-[2rem] text-white shadow-lg cursor-pointer flex justify-between items-center">
-                        <div><p class="font-black text-2xl">${controlosHoje.length}</p><p class="font-bold text-[10px] uppercase">Controlos Hoje</p></div>
-                        <span class="text-3xl">🔬</span>
-                    </div>`;
+            if(controlos.length > 0) {
+                painel.innerHTML += `<div onclick="renderizar('controlo')" class="bg-sky-600 p-8 rounded-[2.5rem] text-white shadow-xl flex justify-between items-center"><div><p class="font-black text-4xl">${controlos.length}</p><p class="font-bold text-sm uppercase">Controlos Agendados para Hoje</p></div><span class="text-5xl">🔬</span></div>`;
             }
 
             let filtrados = pacientes;
-            if (filtroManual === 'fim') filtrados = elegiveisFim;
-            if (filtroManual === 'controlo') filtrados = controlosHoje;
-            if (busca) filtrados = filtrados.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
+            if(filtroAlerta === 'fim') filtrados = elegiveis;
+            if(filtroAlerta === 'controlo') filtrados = controlos;
+            if(busca) filtrados = filtrados.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
 
             document.getElementById('dashTotal').innerText = pacientes.length;
-            document.getElementById('dashSensivel').innerText = pacientes.filter(p => p.tipo === "Sensível").length;
+            document.getElementById('dashAtivos').innerText = pacientes.filter(p => p.estado === "Em Tratamento").length;
             document.getElementById('dashResistente').innerText = pacientes.filter(p => p.tipo === "Resistente").length;
+            document.getElementById('contadorLista').innerText = filtrados.length;
 
-            lista.innerHTML = filtrados.reverse().map(p => {
-                const dias = Math.floor((hoje - new Date(p.dataInicio)) / 86400000);
-                return `
-                <div class="paciente-card bg-white shadow-xl border-l-[15px] ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'} mb-6">
-                    <div onclick="this.nextElementSibling.classList.toggle('hidden')" class="p-7 flex justify-between items-center cursor-pointer">
-                        <div>
-                            <p class="text-[11px] font-black text-slate-400">NID: ${p.nid}</p>
-                            <h3 class="font-black text-slate-900 uppercase text-2xl">${p.nome}</h3>
-                            <p class="text-xs font-bold text-blue-500 uppercase">${dias} Dias decorridos</p>
+            const cores = {
+                "Em Tratamento": "bg-sky-100 text-sky-700",
+                "Curado": "bg-green-100 text-green-700",
+                "Abandono": "bg-yellow-100 text-yellow-700",
+                "Óbito": "bg-red-100 text-red-700",
+                "Transferido": "bg-slate-200 text-slate-700"
+            };
+
+            lista.innerHTML = filtrados.reverse().map(p => `
+                <div class="paciente-card border-l-[18px] ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'}">
+                    <div onclick="this.nextElementSibling.classList.toggle('hidden')" class="p-8 cursor-pointer">
+                        <div class="flex justify-between items-start mb-3">
+                            <p class="font-black text-slate-400 text-sm tracking-widest uppercase">NID: ${p.nid}</p>
+                            <span class="px-5 py-2 rounded-2xl font-black text-xs uppercase ${cores[p.estado]}">${p.estado}</span>
                         </div>
-                        <span class="text-[11px] font-black uppercase text-blue-700 bg-blue-100 px-4 py-2 rounded-2xl">${p.regime}</span>
+                        <h3 class="font-black text-slate-800 text-3xl uppercase leading-tight">${p.nome}</h3>
+                        <div class="mt-4 flex gap-4 overflow-x-auto pb-2">
+                            <span class="bg-slate-100 px-4 py-2 rounded-xl text-xs font-black text-slate-500 uppercase italic">🩺 ${p.diagnostico || 'Sem DX'}</span>
+                            <span class="bg-sky-50 px-4 py-2 rounded-xl text-xs font-black text-sky-600 uppercase">💊 ${p.regime}</span>
+                        </div>
                     </div>
                     <div class="hidden p-8 bg-slate-50 border-t-4 border-slate-100 space-y-6">
-                        <div class="grid grid-cols-2 gap-4 text-xs font-black text-slate-600">
-                            <p>🎂 ${p.idade} ANOS</p><p>👤 ${p.sexo}</p>
-                            <p class="col-span-2">📞 ${p.contacto || 'SEM TELEFONE'}</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-3xl shadow-sm text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Idade</p>
+                                <p class="text-2xl font-black text-slate-700">${p.idade} ANOS</p>
+                            </div>
+                            <div class="bg-white p-5 rounded-3xl shadow-sm text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Início</p>
+                                <p class="text-xl font-black text-sky-600">${new Date(p.dataInicio).toLocaleDateString()}</p>
+                            </div>
                         </div>
-                        <div class="bg-slate-900 p-6 rounded-[2rem] text-white text-center">
-                            <p class="font-bold text-sm">📅 53º: ${new Date(new Date(p.dataInicio).getTime() + 53*86400000).toLocaleDateString()}</p>
-                            <p class="font-bold text-sm">📅 145º: ${new Date(new Date(p.dataInicio).getTime() + 145*86400000).toLocaleDateString()}</p>
-                        </div>
-                        <button onclick="remover(${p.id})" class="w-full text-red-400 font-black text-xs pt-4 uppercase">Excluir</button>
+                        <button onclick="abrirModal(${p.id})" class="w-full py-6 bg-white border-4 border-sky-500 text-sky-500 rounded-[2rem] font-black text-xl uppercase shadow-lg">
+                            ATUALIZAR ESTADO / EDITAR
+                        </button>
+                        <button onclick="remover(${p.id})" class="w-full text-red-300 font-bold uppercase text-xs">Excluir Registro permanentemente</button>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
         }
 
-        function remover(id) { if(confirm("Apagar?")) { pacientes = pacientes.filter(p => p.id !== id); localStorage.setItem('tb_pacientes', JSON.stringify(pacientes)); renderizar(); } }
-        function exportarDados() { const blob = new Blob([JSON.stringify(pacientes)], {type:"application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = "backup_tb.json"; a.click(); }
-        function importarDados(event) { const reader = new FileReader(); reader.onload = e => { pacientes = JSON.parse(e.target.result); localStorage.setItem('tb_pacientes', JSON.stringify(pacientes)); renderizar(); }; reader.readAsText(event.target.files[0]); }
-
+        function remover(id) { if(confirm("Deseja mesmo excluir este paciente?")) { pacientes = pacientes.filter(p => p.id !== id); localStorage.setItem('tb_pacientes', JSON.stringify(pacientes)); renderizar(); } }
+        function exportarDados() { const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pacientes)); const a = document.createElement('a'); a.href = data; a.download = "backup_tb.json"; a.click(); }
+        
         renderizar();
     </script>
 </body>

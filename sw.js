@@ -3,7 +3,7 @@ const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon.png',
+  'https://cdn-icons-png.flaticon.com/512/2864/2864387.png',
   'https://cdn.tailwindcss.com'
 ];
 

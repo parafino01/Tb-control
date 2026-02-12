@@ -3,83 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1e293b">
-    <title>TB-CONTROL PRO</title>
+    <meta name="theme-color" content="#00463f">
+    <title>TB-CONTROL | Medical Record</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .modal-scroll { max-height: 85vh; overflow-y: auto; }
-        .paciente-card { transition: all 0.2s ease; border-radius: 1.25rem; }
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+        body { font-family: 'Open Sans', sans-serif; background-color: #eeeeee; }
+        .omrs-header { background-color: #00463f; border-bottom: 4px solid #f26522; }
+        .omrs-card { border-top: 3px solid #00463f; }
+        .btn-omrs { background-color: #00463f; transition: all 0.2s; }
+        .btn-omrs:hover { background-color: #002d29; }
+        .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
-<body class="bg-slate-50 pb-24 text-slate-900">
+<body class="pb-20">
 
-    <header class="bg-slate-800 p-5 text-white sticky top-0 z-10 shadow-lg">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="font-black text-xl tracking-tighter italic">TB-CONTROL</h1>
+    <header class="omrs-header p-4 text-white sticky top-0 z-20 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-1 rounded shadow-inner">
+                    <svg class="w-8 h-8 text-[#00463f]" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-4v-4H5v-4h5V5h4v5h5v4h-5v4z"/></svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight uppercase tracking-tight">TB-CONTROL</h1>
+                    <p class="text-[10px] opacity-80 uppercase font-semibold">Moçambique | Unidade Sanitária</p>
+                </div>
+            </div>
+            
             <div class="flex gap-2">
-                <button onclick="exportarDadosJS()" class="bg-blue-700 p-2 rounded-lg text-[10px] font-bold border border-blue-600 active:bg-blue-500 shadow-sm">EXPORTAR JS</button>
-                <button onclick="document.getElementById('fileInputJS').click()" class="bg-emerald-700 p-2 rounded-lg text-[10px] font-bold border border-emerald-600 active:bg-emerald-500 shadow-sm">IMPORTAR JS</button>
-                <input type="file" id="fileInputJS" class="hidden" accept=".js,.json" onchange="importarDadosJS(event)">
-            </div>
-        </div>
-        
-        <div class="grid grid-cols-3 gap-2">
-            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-blue-500 text-center">
-                <p class="text-[9px] uppercase font-bold text-blue-300">Total</p>
-                <p id="dashTotal" class="text-xl font-black">0</p>
-            </div>
-            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-green-500 text-center">
-                <p class="text-[9px] uppercase font-bold text-green-300">Sensível</p>
-                <p id="dashSensivel" class="text-xl font-black">0</p>
-            </div>
-            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-red-500 text-center">
-                <p class="text-[9px] uppercase font-bold text-red-300">Resistente</p>
-                <p id="dashResistente" class="text-xl font-black">0</p>
+                <button onclick="exportarDadosJS()" class="p-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded flex items-center gap-1 text-[10px] font-bold transition-all" title="Backup (Exportar)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span class="hidden sm:inline">EXPORTAR</span>
+                </button>
+                <button onclick="document.getElementById('fileInputJS').click()" class="p-2 bg-[#f26522] hover:bg-[#d4561b] border border-[#f26522] rounded flex items-center gap-1 text-[10px] font-bold transition-all" title="Restaurar (Importar)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span class="hidden sm:inline">IMPORTAR</span>
+                </button>
+                <input type="file" id="fileInputJS" class="hidden" accept=".json" onchange="importarDadosJS(event)">
             </div>
         </div>
     </header>
 
-    <main class="p-4">
-        <div class="relative mb-6">
-            <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Pesquisar Nome ou NID..." 
-                class="w-full bg-white border border-slate-200 p-4 pl-12 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium">
-            <svg class="w-5 h-5 absolute left-4 top-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2"></path></svg>
+    <div class="bg-white border-b border-gray-300 p-3 shadow-sm mb-4">
+        <div class="max-w-4xl mx-auto grid grid-cols-3 gap-4 text-center">
+            <div>
+                <span class="block text-[10px] text-gray-500 font-bold uppercase">Pacientes</span>
+                <span id="dashTotal" class="text-xl font-bold text-gray-800">0</span>
+            </div>
+            <div class="border-x border-gray-200">
+                <span class="block text-[10px] text-gray-500 font-bold uppercase text-emerald-600">Sensível</span>
+                <span id="dashSensivel" class="text-xl font-bold text-emerald-700">0</span>
+            </div>
+            <div>
+                <span class="block text-[10px] text-gray-500 font-bold uppercase text-rose-600">Resistente</span>
+                <span id="dashResistente" class="text-xl font-bold text-rose-700">0</span>
+            </div>
         </div>
-        <div id="listaPacientes" class="space-y-3"></div>
+    </div>
+
+    <main class="max-w-4xl mx-auto p-4">
+        <div class="bg-white p-4 rounded-md border border-gray-300 shadow-sm mb-6">
+            <label class="block text-xs font-bold text-gray-600 mb-2 uppercase">Pesquisar Paciente (NID ou Nome):</label>
+            <div class="relative">
+                <input type="text" id="inputBusca" onkeyup="renderizar()" 
+                    class="w-full bg-[#f9f9f9] border border-gray-400 p-3 pl-10 rounded focus:border-[#00463f] focus:ring-1 focus:ring-[#00463f] outline-none">
+                <svg class="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2"></path></svg>
+            </div>
+        </div>
+
+        <div id="listaPacientes" class="space-y-2"></div>
     </main>
 
-    <button onclick="abrirModal()" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl z-20 active:scale-90 transition-all">+</button>
+    <button onclick="abrirModal()" class="fixed bottom-6 right-6 bg-[#f26522] hover:bg-[#d4561b] text-white p-4 rounded-full shadow-lg z-30 flex items-center justify-center transition-all">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M12 4v16m8-8H4"/></svg>
+    </button>
 
-    <div id="modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-30">
-        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl modal-scroll">
-            <h2 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">Novo Registro</h2>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="nid" placeholder="NID" class="border p-3 rounded-xl bg-slate-50 outline-none uppercase font-bold text-sm">
-                    <input type="number" id="idade" placeholder="Idade" class="border p-3 rounded-xl bg-slate-50 outline-none">
-                </div>
-                <input type="text" id="nome" placeholder="Nome do Paciente" class="w-full border p-3 rounded-xl bg-slate-50 outline-none uppercase text-sm font-medium">
-                <div class="grid grid-cols-2 gap-2">
-                    <select id="sexo" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm font-medium">
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
-                    </select>
-                    <input type="tel" id="contacto" placeholder="Telefone" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm font-medium">
-                </div>
-                <div class="p-4 bg-slate-100 rounded-2xl space-y-3">
-                    <label class="block text-[10px] font-black text-slate-500 uppercase">Classificação e Regime</label>
-                    <select id="tipo" onchange="atualizarRegimes()" class="w-full border p-3 rounded-xl bg-white outline-none font-bold text-sm">
-                        <option value="Sensível">TB SENSÍVEL</option>
-                        <option value="Resistente">TB RESISTENTE</option>
-                    </select>
-                    <select id="regime" class="w-full border p-3 rounded-xl bg-white outline-none text-sm font-medium"></select>
-                </div>
-                <input type="date" id="dataInicio" class="w-full border p-3 rounded-xl bg-slate-50 outline-none font-bold">
+    <div id="modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center p-4 z-40">
+        <div class="bg-white w-full max-w-lg border-t-[8px] border-[#00463f] shadow-2xl overflow-hidden rounded-sm">
+            <div class="bg-gray-100 p-4 border-b border-gray-300 flex justify-between items-center">
+                <h2 class="font-bold text-[#00463f] uppercase text-sm">Registro de Novo Paciente</h2>
+                <button onclick="fecharModal()" class="text-gray-500 font-bold">FECHAR</button>
             </div>
-            <div class="flex gap-2 mt-6">
-                <button onclick="fecharModal()" class="flex-1 py-4 text-slate-400 font-bold text-sm uppercase">Sair</button>
-                <button onclick="salvarPaciente()" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase shadow-lg">Salvar</button>
+            <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase">NID</label>
+                        <input type="text" id="nid" class="w-full border border-gray-400 p-2 rounded outline-none focus:border-[#00463f] uppercase font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase">Idade</label>
+                        <input type="number" id="idade" class="w-full border border-gray-400 p-2 rounded outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase">Nome Completo</label>
+                    <input type="text" id="nome" class="w-full border border-gray-400 p-2 rounded outline-none uppercase font-semibold">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase">Sexo</label>
+                        <select id="sexo" class="w-full border border-gray-400 p-2 rounded outline-none">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase">Telefone</label>
+                        <input type="tel" id="contacto" class="w-full border border-gray-400 p-2 rounded outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="caracterizacao" class="w-full border border-gray-400 p-2 rounded text-[10px] font-bold uppercase">
+                        <option value="Pulmonar">Pulmonar</option>
+                        <option value="Extra-Pulmonar">Extra-Pulmonar</option>
+                    </select>
+                    <select id="diagnostico" class="w-full border border-gray-400 p-2 rounded text-[10px] font-bold uppercase">
+                        <option value="Bacteriológico">Bacteriológico</option>
+                        <option value="Clínico">Clínico</option>
+                    </select>
+                </div>
+                <div class="bg-gray-50 p-4 border border-gray-200 rounded">
+                    <label class="block text-[10px] font-bold text-[#00463f] uppercase mb-2">Classificação Médica</label>
+                    <div class="space-y-3">
+                        <select id="tipo" onchange="atualizarRegimes()" class="w-full border border-gray-400 p-2 rounded font-bold text-sm">
+                            <option value="Sensível">TB SENSÍVEL (RS)</option>
+                            <option value="Resistente">TB RESISTENTE (RR)</option>
+                        </select>
+                        <select id="regime" class="w-full border border-gray-400 p-2 rounded text-sm"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Data de Início do Tratamento</label>
+                    <input type="date" id="dataInicio" class="w-full border border-gray-400 p-2 rounded font-bold outline-none">
+                </div>
+            </div>
+            <div class="p-4 bg-gray-100 border-t border-gray-300">
+                <button onclick="salvarPaciente()" class="w-full btn-omrs text-white p-3 rounded font-bold uppercase tracking-wide">Gravar Ficha de Paciente</button>
             </div>
         </div>
     </div>
@@ -94,7 +154,8 @@
             const tipo = document.getElementById('tipo').value;
             const rs = document.getElementById('regime');
             rs.innerHTML = tipo === "Sensível" ? 
-                '<option value="2HRZE/4HR">2HRZE/4HR</option>' : '<option value="BPaL">BPaL</option>';
+                '<option value="2HRZE/4HR">2HRZE/4HR</option><option value="2HRZ+E/4HR">2HRZ+E/4HR</option>' : 
+                '<option value="BPaL">BPaL (Regime Resistente)</option>';
         }
 
         function salvarPaciente() {
@@ -105,84 +166,93 @@
                 idade: document.getElementById('idade').value,
                 sexo: document.getElementById('sexo').value,
                 contacto: document.getElementById('contacto').value,
+                caracterizacao: document.getElementById('caracterizacao').value,
+                diagnostico: document.getElementById('diagnostico').value,
                 tipo: document.getElementById('tipo').value,
                 regime: document.getElementById('regime').value,
                 dataInicio: document.getElementById('dataInicio').value
             };
             if (!p.nome || !p.dataInicio) return alert("Erro: Nome e Data são obrigatórios!");
             pacientes.push(p);
-            localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-            fecharModal(); renderizar(); limparForm();
+            armazenar(); fecharModal(); renderizar(); limparForm();
         }
 
+        function armazenar() { localStorage.setItem('tb_pacientes', JSON.stringify(pacientes)); }
         function limparForm() { document.querySelectorAll('#modal input').forEach(i => i.value = ''); }
         function toggleDetalhes(id) { document.getElementById(`detalhe-${id}`).classList.toggle('hidden'); }
 
         function remover(id) {
-            if(confirm("Apagar este registro?")) {
+            if(confirm("Confirmar ELIMINAÇÃO definitiva do registro?")) {
                 pacientes = pacientes.filter(p => p.id !== id);
-                localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-                renderizar();
+                armazenar(); renderizar();
             }
         }
 
-        // --- NOVA LÓGICA DE EXPORTAR/IMPORTAR JS ---
-
         function exportarDadosJS() {
-            if (pacientes.length === 0) return alert("Não há dados para exportar.");
+            if (pacientes.length === 0) return alert("Sem dados para exportar.");
             const dataStr = JSON.stringify(pacientes, null, 2);
-            const blob = new Blob([dataStr], { type: "application/javascript" });
+            const blob = new Blob([dataStr], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `backup_pacientes_${new Date().toISOString().slice(0,10)}.js`;
+            link.download = `OPENMRS_BACKUP_TB_${new Date().toISOString().slice(0,10)}.json`;
             link.click();
-            URL.revokeObjectURL(url);
         }
 
         function importarDadosJS(event) {
-            const file = event.target.files[0];
-            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const dados = JSON.parse(e.target.result);
-                    if (confirm(`Importar ${dados.length} registros? Isso substituirá os atuais.`)) {
-                        pacientes = dados;
-                        localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-                        renderizar();
-                        alert("Dados importados com sucesso!");
+                    if (confirm(`Sincronizar ${dados.length} pacientes com a base local?`)) {
+                        pacientes = dados; armazenar(); renderizar();
                     }
-                } catch (err) {
-                    alert("Erro ao ler o arquivo. Certifique-se que é um arquivo JS/JSON válido.");
-                }
+                } catch (err) { alert("Formato de arquivo inválido."); }
             };
-            reader.readAsText(file);
+            reader.readAsText(event.target.files[0]);
         }
 
-        // --- FIM DA NOVA LÓGICA ---
+        function calcularControlos(data, tipo) {
+            const inicio = new Date(data);
+            if (tipo === "Sensível") {
+                let d53 = new Date(inicio); d53.setDate(inicio.getDate() + 53);
+                let d145 = new Date(inicio); d145.setDate(inicio.getDate() + 145);
+                return `Próximos Controlos: 53º dia (${d53.toLocaleDateString()}) | 145º dia (${d145.toLocaleDateString()})`;
+            }
+            return "ALERTA: Paciente Resistente - Seguimento Mensal Obrigatório";
+        }
 
         function renderizar() {
             const lista = document.getElementById('listaPacientes');
             const busca = document.getElementById('inputBusca').value.toLowerCase();
             const filtrados = pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
-            
+
             document.getElementById('dashTotal').innerText = pacientes.length;
             document.getElementById('dashSensivel').innerText = pacientes.filter(p => p.tipo === "Sensível").length;
             document.getElementById('dashResistente').innerText = pacientes.filter(p => p.tipo === "Resistente").length;
 
             lista.innerHTML = filtrados.reverse().map(p => `
-                <div class="paciente-card bg-white shadow-sm border-l-4 ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'} mb-2">
-                    <div onclick="toggleDetalhes(${p.id})" class="p-4 flex justify-between items-center cursor-pointer">
+                <div class="bg-white border-l-[6px] ${p.tipo === 'Resistente' ? 'border-rose-600' : 'border-emerald-600'} shadow-sm omrs-card">
+                    <div onclick="toggleDetalhes(${p.id})" class="p-3 flex justify-between items-center cursor-pointer hover:bg-gray-50">
                         <div>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">NID: ${p.nid}</p>
-                            <h3 class="font-bold text-slate-800 uppercase text-sm">${p.nome}</h3>
+                            <span class="text-[10px] font-bold text-gray-400">NID: ${p.nid}</span>
+                            <h3 class="font-bold text-gray-800 text-sm uppercase">${p.nome}</h3>
                         </div>
-                        <span class="text-[9px] font-black uppercase text-blue-600 bg-blue-50 px-2 py-1 rounded">${p.regime}</span>
+                        <span class="status-badge ${p.tipo === 'Resistente' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                            ${p.regime}
+                        </span>
                     </div>
-                    <div id="detalhe-${p.id}" class="hidden p-4 bg-slate-50 border-t text-[11px] space-y-3">
-                        <p><b>Contacto:</b> ${p.contacto}</p>
-                        <button onclick="remover(${p.id})" class="w-full text-red-400 font-bold text-[9px] uppercase">Apagar</button>
+                    <div id="detalhe-${p.id}" class="hidden p-4 bg-gray-50 border-t border-gray-200">
+                        <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
+                            <p><b>Idade/Sexo:</b> ${p.idade} / ${p.sexo}</p>
+                            <p><b>Telefone:</b> ${p.contacto}</p>
+                            <p><b>Diagnóstico:</b> ${p.diagnostico}</p>
+                            <p><b>Tipo:</b> ${p.caracterizacao}</p>
+                        </div>
+                        <div class="bg-[#00463f] p-3 text-white text-[10px] font-bold text-center rounded uppercase tracking-wider mb-2">
+                            ${calcularControlos(p.dataInicio, p.tipo)}
+                        </div>
+                        <button onclick="remover(${p.id})" class="w-full text-rose-600 text-[10px] font-bold py-2 uppercase border border-rose-200 rounded hover:bg-rose-50">Eliminar Ficha</button>
                     </div>
                 </div>
             `).join('');

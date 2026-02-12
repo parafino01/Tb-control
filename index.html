@@ -4,29 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00463f">
-    <title>TB-CONTROL | EHR</title>
+    <title>TB-CONTROL | EHR FULL</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
-        
-        /* Aumento geral do tamanho das letras */
         body { font-family: 'Open Sans', sans-serif; background-color: #f4f4f4; font-size: 16px; }
         .omrs-header { background-color: #00463f; border-bottom: 5px solid #f26522; }
-        .omrs-card { border-top: 5px solid #00463f; border-radius: 8px; }
-        
-        /* Alertas visuais mais fortes */
-        .alert-urgent { 
-            background-color: #fee2e2; 
-            border: 2px solid #b91c1c; 
-            color: #b91c1c; 
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
+        .omrs-card { border-top: 5px solid #00463f; border-radius: 8px; transition: all 0.3s; }
+        .alert-urgent { background-color: #fee2e2; border: 2px solid #b91c1c; color: #b91c1c; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+        select, input { font-size: 1.1rem !important; } /* Forçar letras grandes nos inputs */
     </style>
 </head>
 <body class="pb-24">
@@ -39,10 +27,9 @@
                 </div>
                 <div>
                     <h1 class="font-extrabold text-2xl tracking-tight uppercase">TB-CONTROL PRO</h1>
-                    <p class="text-xs opacity-90 uppercase font-bold">Unidade Sanitária | Moçambique</p>
+                    <p class="text-xs opacity-90 uppercase font-bold tracking-widest">Moçambique | Gestão Clínica Total</p>
                 </div>
             </div>
-            
             <div class="flex gap-3">
                 <button onclick="exportarDadosJS()" class="p-3 bg-white/10 hover:bg-white/20 border border-white/40 rounded-lg flex items-center gap-2 text-xs font-black">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
@@ -60,15 +47,15 @@
     <div class="bg-white border-b border-gray-300 p-6 shadow-sm mb-6">
         <div class="max-w-6xl mx-auto grid grid-cols-3 gap-8 text-center">
             <div>
-                <span class="block text-xs text-gray-400 font-black uppercase mb-1 tracking-tighter">Pacientes Ativos</span>
+                <span class="block text-xs text-gray-400 font-black uppercase mb-1">Pacientes</span>
                 <span id="dashTotal" class="text-4xl font-black text-gray-800">0</span>
             </div>
             <div class="border-x-2 border-gray-100">
-                <span class="block text-xs text-emerald-500 font-black uppercase mb-1 tracking-tighter">TB Sensível</span>
+                <span class="block text-xs text-emerald-500 font-black uppercase mb-1">Sensível</span>
                 <span id="dashSensivel" class="text-4xl font-black text-emerald-600">0</span>
             </div>
             <div>
-                <span class="block text-xs text-rose-500 font-black uppercase mb-1 tracking-tighter">TB Resistente</span>
+                <span class="block text-xs text-rose-500 font-black uppercase mb-1">Resistente</span>
                 <span id="dashResistente" class="text-4xl font-black text-rose-600">0</span>
             </div>
         </div>
@@ -76,10 +63,9 @@
 
     <main class="max-w-6xl mx-auto p-4">
         <div class="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm mb-8">
-            <label class="block text-sm font-black text-gray-600 mb-3 uppercase tracking-wide">Pesquisar Paciente (NID ou Nome):</label>
             <div class="relative">
-                <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Ex: 102030..." 
-                    class="w-full bg-gray-50 border-2 border-gray-300 p-5 pl-14 rounded-lg focus:border-[#00463f] focus:ring-2 focus:ring-[#00463f]/20 outline-none text-lg font-semibold transition-all">
+                <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Pesquisar por NID ou Nome..." 
+                    class="w-full bg-gray-50 border-2 border-gray-300 p-5 pl-14 rounded-lg focus:border-[#00463f] focus:ring-2 focus:ring-[#00463f]/20 outline-none text-xl font-bold">
                 <svg class="w-8 h-8 absolute left-4 top-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="3"></path></svg>
             </div>
         </div>
@@ -87,74 +73,103 @@
         <div id="listaPacientes" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </main>
 
-    <button onclick="abrirModal()" class="fixed bottom-10 right-10 bg-[#f26522] hover:bg-[#d4561b] text-white w-20 h-20 rounded-full shadow-2xl z-30 flex items-center justify-center transition-transform active:scale-90 border-4 border-white">
+    <button onclick="abrirModal()" class="fixed bottom-10 right-10 bg-[#f26522] text-white w-20 h-20 rounded-full shadow-2xl z-30 flex items-center justify-center border-4 border-white active:scale-90 transition-transform">
         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="4" d="M12 4v16m8-8H4"/></svg>
     </button>
 
     <div id="modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-2xl border-t-[12px] border-[#00463f] shadow-2xl rounded-lg overflow-hidden">
+        <div class="bg-white w-full max-w-3xl border-t-[12px] border-[#00463f] shadow-2xl rounded-lg overflow-hidden">
             <div class="bg-gray-100 p-5 border-b flex justify-between items-center">
-                <h2 class="font-black text-[#00463f] uppercase text-lg">Nova Ficha Clínica</h2>
-                <button onclick="fecharModal()" class="text-gray-500 hover:text-rose-600 font-black text-xl">X</button>
+                <h2 class="font-black text-[#00463f] uppercase text-lg italic">Registo Clínico Completo</h2>
+                <button onclick="fecharModal()" class="text-gray-500 font-black text-2xl">×</button>
             </div>
             <div class="p-8 space-y-6 max-h-[75vh] overflow-y-auto">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs font-black text-gray-500 uppercase">NID (Identificação)</label>
-                        <input type="text" id="nid" class="w-full border-2 border-gray-300 p-4 rounded-lg text-lg font-bold uppercase outline-none focus:border-[#00463f]">
+                        <label class="block text-xs font-black text-gray-400 uppercase">NID</label>
+                        <input type="text" id="nid" class="w-full border-2 border-gray-300 p-4 rounded-lg font-bold uppercase outline-none focus:border-[#00463f]">
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-gray-500 uppercase">Idade</label>
-                        <input type="number" id="idade" class="w-full border-2 border-gray-300 p-4 rounded-lg text-lg outline-none">
+                        <label class="block text-xs font-black text-gray-400 uppercase">Nome Completo</label>
+                        <input type="text" id="nome" class="w-full border-2 border-gray-300 p-4 rounded-lg font-bold uppercase outline-none focus:border-[#00463f]">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-black text-gray-500 uppercase">Nome Completo do Paciente</label>
-                    <input type="text" id="nome" class="w-full border-2 border-gray-300 p-4 rounded-lg text-lg font-bold uppercase outline-none">
-                </div>
-                <div class="grid grid-cols-2 gap-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label class="block text-xs font-black text-gray-500 uppercase">Classificação</label>
-                        <select id="tipo" onchange="atualizarRegimes()" class="w-full border-2 border-gray-300 p-4 rounded-lg text-lg font-black text-[#00463f]">
+                        <label class="block text-xs font-black text-gray-400 uppercase">Idade</label>
+                        <input type="number" id="idade" class="w-full border-2 border-gray-300 p-4 rounded-lg font-bold outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-400 uppercase">Sexo</label>
+                        <select id="sexo" class="w-full border-2 border-gray-300 p-4 rounded-lg font-bold">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-400 uppercase">Contacto</label>
+                        <input type="tel" id="contacto" class="w-full border-2 border-gray-300 p-4 rounded-lg font-bold outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2">Caracterização</label>
+                        <select id="caracterizacao" class="w-full border-2 border-gray-300 p-3 rounded-lg font-bold">
+                            <option value="Pulmonar">Pulmonar</option>
+                            <option value="Extra-Pulmonar">Extra-Pulmonar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase mb-2">Diagnóstico</label>
+                        <select id="diagnostico" class="w-full border-2 border-gray-300 p-3 rounded-lg font-bold">
+                            <option value="Bacteriológico">Bacteriológico</option>
+                            <option value="Clínico">Clínico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <div>
+                        <label class="block text-xs font-black text-blue-600 uppercase mb-2">Tipo de TB</label>
+                        <select id="tipo" onchange="atualizarRegimes()" class="w-full border-2 border-blue-300 p-4 rounded-lg font-black text-[#00463f]">
                             <option value="Sensível">TB SENSÍVEL (RS)</option>
                             <option value="Resistente">TB RESISTENTE (RR)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-black text-gray-500 uppercase">Data de Início</label>
-                        <input type="date" id="dataInicio" class="w-full border-2 border-gray-300 p-4 rounded-lg text-lg font-bold outline-none">
+                        <label class="block text-xs font-black text-blue-600 uppercase mb-2">Regime</label>
+                        <select id="regime" class="w-full border-2 border-blue-300 p-4 rounded-lg font-bold"></select>
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-gray-400 uppercase">Data de Início do Tratamento</label>
+                    <input type="date" id="dataInicio" class="w-full border-2 border-gray-300 p-4 rounded-lg font-black outline-none">
                 </div>
             </div>
             <div class="p-6 bg-gray-100 border-t">
-                <button onclick="salvarPaciente()" class="w-full bg-[#00463f] text-white p-6 rounded-xl font-black uppercase text-xl shadow-xl active:translate-y-1 transition-all">Gravar e Gerar Cronograma</button>
+                <button onclick="salvarPaciente()" class="w-full bg-[#00463f] text-white p-6 rounded-xl font-black uppercase text-xl shadow-xl hover:bg-[#002d29] transition-all">Confirmar e Gravar Ficha</button>
             </div>
         </div>
     </div>
 
     <script>
         let pacientes = JSON.parse(localStorage.getItem('tb_pacientes')) || [];
-
-        // --- SISTEMA DE ÁUDIO ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function tocarSom(frequencia, tipo, duracao) {
-            const oscillator = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            oscillator.type = tipo;
-            oscillator.frequency.setValueAtTime(frequencia, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            oscillator.connect(gain);
-            gain.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + duracao);
+
+        function tocarSom(f, t, d) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + d);
         }
 
         function somSucesso() { tocarSom(880, 'sine', 0.1); }
-        function somAlerta() { 
-            tocarSom(440, 'triangle', 0.2);
-            setTimeout(() => tocarSom(330, 'triangle', 0.3), 200);
-        }
+        function somAlerta() { tocarSom(440, 'triangle', 0.2); setTimeout(() => tocarSom(330, 'triangle', 0.3), 200); }
 
         function abrirModal() { document.getElementById('modal').classList.remove('hidden'); atualizarRegimes(); }
         function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
@@ -162,8 +177,9 @@
         function atualizarRegimes() {
             const tipo = document.getElementById('tipo').value;
             const rs = document.getElementById('regime');
-            // Simplicidade OpenMRS: Regime fixo baseado no tipo
-            // Se precisar de mais regimes, adicione aqui
+            rs.innerHTML = tipo === "Sensível" ? 
+                '<option value="2HRZE/4HR">2HRZE/4HR</option><option value="2HRZ+E/4HR">2HRZ+E/4HR</option>' : 
+                '<option value="BPaL">BPaL (Regime RR)</option>';
         }
 
         function salvarPaciente() {
@@ -172,48 +188,26 @@
                 nid: document.getElementById('nid').value,
                 nome: document.getElementById('nome').value,
                 idade: document.getElementById('idade').value,
+                sexo: document.getElementById('sexo').value,
+                contacto: document.getElementById('contacto').value,
+                caracterizacao: document.getElementById('caracterizacao').value,
+                diagnostico: document.getElementById('diagnostico').value,
                 tipo: document.getElementById('tipo').value,
+                regime: document.getElementById('regime').value,
                 dataInicio: document.getElementById('dataInicio').value
             };
-            if (!p.nome || !p.dataInicio) return alert("Erro: Campos obrigatórios!");
-            
+            if (!p.nome || !p.dataInicio) return alert("Erro: Nome e Data obrigatórios!");
             pacientes.push(p);
             localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-            somSucesso();
-            fecharModal(); 
-            renderizar(); 
+            somSucesso(); fecharModal(); renderizar(); limparCampos();
         }
 
-        function getInfoClinica(dataStr, tipo) {
-            const inicio = new Date(dataStr);
-            const hoje = new Date();
-            const diasDecorridos = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
-            
-            let termino = new Date(inicio);
-            termino.setMonth(inicio.getMonth() + 6);
-            
-            let proxControlo = "";
-            let urgente = false;
-
-            if (tipo === "Sensível") {
-                const c1 = 53, c2 = 145;
-                let diaAlvo = diasDecorridos <= c1 ? c1 : c2;
-                let dataAlvo = new Date(inicio);
-                dataAlvo.setDate(inicio.getDate() + diaAlvo);
-                
-                let faltam = Math.floor((dataAlvo - hoje) / (1000 * 60 * 60 * 24));
-                proxControlo = `Controlo em ${faltam} dias (${dataAlvo.toLocaleDateString()})`;
-                if (faltam <= 7) urgente = true;
-            } else {
-                proxControlo = "Controlo Mensal Obrigatório";
-                urgente = true;
-            }
-
-            return { proxControlo, termino: termino.toLocaleDateString(), urgente };
+        function limparCampos() { 
+            document.querySelectorAll('#modal input').forEach(i => i.value = ''); 
         }
 
         function remover(id) {
-            if(confirm("Deseja apagar esta ficha clínica?")) {
+            if(confirm("Deseja eliminar este registo permanentemente?")) {
                 pacientes = pacientes.filter(p => p.id !== id);
                 localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
                 renderizar();
@@ -229,53 +223,75 @@
             document.getElementById('dashSensivel').innerText = pacientes.filter(p => p.tipo === "Sensível").length;
             document.getElementById('dashResistente').innerText = pacientes.filter(p => p.tipo === "Resistente").length;
 
-            let temAlertaSonoro = false;
+            let temAlerta = false;
 
             lista.innerHTML = filtrados.reverse().map(p => {
-                const info = getInfoClinica(p.dataInicio, p.tipo);
-                if (info.urgente) temAlertaSonoro = true;
+                const inicio = new Date(p.dataInicio);
+                const hoje = new Date();
+                const decorridos = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
+                
+                let termino = new Date(inicio); termino.setMonth(inicio.getMonth() + 6);
+                
+                let infoControlo = "";
+                let eUrgente = false;
+
+                if (p.tipo === "Sensível") {
+                    const c1 = 53, c2 = 145;
+                    let alvo = decorridos <= c1 ? c1 : c2;
+                    let dataAlvo = new Date(inicio); dataAlvo.setDate(inicio.getDate() + alvo);
+                    let faltam = Math.floor((dataAlvo - hoje) / (1000 * 60 * 60 * 24));
+                    infoControlo = `Controlo ${alvo === 53 ? '1º' : '2º'}: em ${faltam} dias (${dataAlvo.toLocaleDateString()})`;
+                    if (faltam <= 7) eUrgente = true;
+                } else {
+                    infoControlo = "Seguimento Mensal Obrigatório (RR)";
+                    eUrgente = true;
+                }
+
+                if (eUrgente) temAlerta = true;
 
                 return `
                 <div class="bg-white border-l-[10px] ${p.tipo === 'Resistente' ? 'border-rose-600' : 'border-emerald-600'} shadow-md omrs-card">
                     <div onclick="document.getElementById('detalhe-${p.id}').classList.toggle('hidden')" class="p-6 cursor-pointer hover:bg-gray-50 transition-all">
-                        <div class="flex justify-between items-start mb-4">
+                        <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="text-xs font-black text-gray-400">NID: ${p.nid}</span>
+                                <span class="text-[10px] font-black text-gray-400 uppercase">NID: ${p.nid}</span>
                                 <h3 class="font-extrabold text-xl text-gray-900 uppercase leading-none">${p.nome}</h3>
                             </div>
-                            <span class="bg-gray-100 text-[10px] font-black p-2 rounded">${p.tipo}</span>
+                            <span class="bg-gray-100 text-[10px] font-black p-2 rounded border border-gray-200">${p.regime}</span>
                         </div>
                         
-                        <div class="p-4 rounded-lg ${info.urgente ? 'alert-urgent' : 'bg-gray-100 text-gray-600'}">
-                            <p class="text-xs font-black uppercase mb-1">Situação de Seguimento:</p>
-                            <p class="text-lg font-bold">${info.proxControlo}</p>
+                        <div class="p-4 rounded-lg ${eUrgente ? 'alert-urgent' : 'bg-gray-100 text-gray-600'} mb-3">
+                            <p class="text-[10px] font-black uppercase mb-1">Estado de Seguimento:</p>
+                            <p class="text-lg font-black">${infoControlo}</p>
                         </div>
                         
-                        <div class="mt-4 flex justify-between text-xs font-bold text-gray-500 uppercase">
+                        <div class="flex justify-between text-[11px] font-bold text-gray-500 uppercase tracking-tighter">
                             <span>Início: ${new Date(p.dataInicio).toLocaleDateString()}</span>
-                            <span>Previsão Fim: ${info.termino}</span>
+                            <span>Término Previsto: ${termino.toLocaleDateString()}</span>
                         </div>
                     </div>
 
                     <div id="detalhe-${p.id}" class="hidden p-6 bg-gray-50 border-t-2 border-gray-100">
-                        <p class="text-sm font-bold text-gray-700 mb-4">Idade do Paciente: ${p.idade} anos</p>
-                        <button onclick="remover(${p.id})" class="w-full text-rose-600 text-xs font-black py-4 border-2 border-rose-200 rounded-lg hover:bg-rose-50 uppercase">Apagar Registro Permanentemente</button>
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold text-gray-700 mb-6">
+                            <p><span class="text-gray-400 uppercase text-[9px] block">Idade/Sexo:</span> ${p.idade} anos / ${p.sexo}</p>
+                            <p><span class="text-gray-400 uppercase text-[9px] block">Contacto:</span> ${p.contacto || 'N/A'}</p>
+                            <p><span class="text-gray-400 uppercase text-[9px] block">Forma:</span> ${p.caracterizacao}</p>
+                            <p><span class="text-gray-400 uppercase text-[9px] block">Diagnóstico:</span> ${p.diagnostico}</p>
+                        </div>
+                        <button onclick="remover(${p.id})" class="w-full text-rose-600 text-xs font-black py-4 border-2 border-rose-200 rounded-lg hover:bg-rose-100 uppercase transition-all">Eliminar Registo Permanente</button>
                     </div>
                 </div>`;
             }).join('');
 
-            // Tocar som de alerta se houver algo urgente ao carregar/mudar
-            if (temAlertaSonoro) somAlerta();
+            if (temAlerta) somAlerta();
         }
 
-        // Funções de Backup
         function exportarDadosJS() {
-            const blob = new Blob([JSON.stringify(pacientes)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `TB_CONTROL_BACKUP.json`;
-            a.click();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pacientes));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `BACKUP_TB_TOTAL_${new Date().toISOString().slice(0,10)}.json`);
+            downloadAnchorNode.click();
         }
 
         function importarDadosJS(event) {
@@ -283,8 +299,7 @@
             reader.onload = (e) => {
                 pacientes = JSON.parse(e.target.result);
                 localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-                renderizar();
-                somSucesso();
+                renderizar(); somSucesso();
             };
             reader.readAsText(event.target.files[0]);
         }

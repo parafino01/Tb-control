@@ -4,137 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e293b">
-    <title>TB-CONTROL VANDUZI PRO</title>
+    <title>TB-CONTROL PRO</title>
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f1f5f9; }
-        .paciente-card { transition: all 0.2s; border-radius: 2.5rem; background: white; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.1); }
-        .modal-scroll { max-height: 90vh; overflow-y: auto; border-radius: 3.5rem; }
-        .btn-blue { background-color: #0ea5e9; color: white; border-radius: 2rem; font-weight: 900; }
-        .alerta-pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-        #appContent { display: none; }
-        html { font-size: 19px; }
+        .modal-scroll { max-height: 85vh; overflow-y: auto; }
+        .paciente-card { transition: all 0.2s ease; border-radius: 1.25rem; }
     </style>
 </head>
-<body class="pb-40">
+<body class="bg-slate-50 pb-24 text-slate-900">
 
-    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-lg rounded-[4rem] p-12 shadow-2xl text-center border-t-[20px] border-sky-500">
-            <div class="mb-10 text-center">
-                <div class="bg-sky-100 w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-6xl">🔐</div>
-                <h2 class="font-black text-4xl text-slate-800 uppercase italic">TB-CONTROL</h2>
-                <p class="font-bold text-slate-400 mt-2 uppercase tracking-widest text-sm">Unidade Sanitária Vanduzi</p>
-            </div>
-            <div class="space-y-6">
-                <input type="text" id="userLogin" placeholder="UTILIZADOR" class="w-full border-4 border-slate-100 p-7 rounded-3xl bg-slate-50 outline-none font-black text-2xl uppercase focus:border-sky-300">
-                <input type="password" id="passLogin" placeholder="SENHA" class="w-full border-4 border-slate-100 p-7 rounded-3xl bg-slate-50 outline-none font-black text-2xl focus:border-sky-300">
-                <button onclick="validarAcesso()" class="w-full py-8 btn-blue text-3xl uppercase shadow-xl active:scale-95 transition-all">ENTRAR</button>
+    <header class="bg-slate-800 p-5 text-white sticky top-0 z-10 shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="font-black text-xl tracking-tighter italic">TB-CONTROL</h1>
+            <div class="flex gap-2">
+                <button onclick="exportarDadosJS()" class="bg-blue-700 p-2 rounded-lg text-[10px] font-bold border border-blue-600 active:bg-blue-500 shadow-sm">EXPORTAR JS</button>
+                <button onclick="document.getElementById('fileInputJS').click()" class="bg-emerald-700 p-2 rounded-lg text-[10px] font-bold border border-emerald-600 active:bg-emerald-500 shadow-sm">IMPORTAR JS</button>
+                <input type="file" id="fileInputJS" class="hidden" accept=".js,.json" onchange="importarDadosJS(event)">
             </div>
         </div>
-    </div>
-
-    <div id="appContent">
-        <header class="bg-slate-900 p-10 text-white sticky top-0 z-10 shadow-2xl rounded-b-[4rem]">
-            <div class="flex justify-between items-center mb-10">
-                <h1 class="font-black text-4xl italic tracking-tighter">TB-CONTROL <span class="text-sky-400 font-light text-xl block not-italic uppercase tracking-widest">Vanduzi 2026</span></h1>
-                <div class="flex gap-4">
-                    <button onclick="exportarDados()" class="bg-slate-800 p-5 rounded-3xl text-3xl">📤</button>
-                    <button onclick="logout()" class="bg-red-900/40 p-5 rounded-3xl text-3xl border border-red-500/30">🚪</button>
-                </div>
+        
+        <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-blue-500 text-center">
+                <p class="text-[9px] uppercase font-bold text-blue-300">Total</p>
+                <p id="dashTotal" class="text-xl font-black">0</p>
             </div>
-            
-            <div class="grid grid-cols-3 gap-6">
-                <div class="bg-white/10 p-6 rounded-[2.5rem] border-b-[10px] border-sky-500 text-center">
-                    <p class="text-xs font-black text-sky-300 uppercase mb-2">Total</p>
-                    <p id="dashTotal" class="text-5xl font-black text-white">0</p>
-                </div>
-                <div class="bg-white/10 p-6 rounded-[2.5rem] border-b-[10px] border-green-500 text-center">
-                    <p class="text-xs font-black text-green-300 uppercase mb-2">Ativos</p>
-                    <p id="dashAtivos" class="text-5xl font-black text-white">0</p>
-                </div>
-                <div class="bg-white/10 p-6 rounded-[2.5rem] border-b-[10px] border-red-500 text-center">
-                    <p class="text-xs font-black text-red-300 uppercase mb-2">Resist.</p>
-                    <p id="dashResistente" class="text-5xl font-black text-white">0</p>
-                </div>
+            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-green-500 text-center">
+                <p class="text-[9px] uppercase font-bold text-green-300">Sensível</p>
+                <p id="dashSensivel" class="text-xl font-black">0</p>
             </div>
-        </header>
-
-        <main class="p-8">
-            <div id="painelAlertas" class="space-y-6 mb-12"></div>
-
-            <div class="relative mb-12">
-                <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="NID OU NOME DO PACIENTE..." 
-                    class="w-full bg-white border-4 border-white p-9 pl-24 rounded-[3.5rem] shadow-2xl outline-none focus:border-sky-500 text-3xl font-black">
-                <span class="absolute left-9 top-9 text-5xl">🔍</span>
+            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-red-500 text-center">
+                <p class="text-[9px] uppercase font-bold text-red-300">Resistente</p>
+                <p id="dashResistente" class="text-xl font-black">0</p>
             </div>
+        </div>
+    </header>
 
-            <div id="listaPacientes" class="space-y-10"></div>
-        </main>
+    <main class="p-4">
+        <div class="relative mb-6">
+            <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Pesquisar Nome ou NID..." 
+                class="w-full bg-white border border-slate-200 p-4 pl-12 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium">
+            <svg class="w-5 h-5 absolute left-4 top-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2"></path></svg>
+        </div>
+        <div id="listaPacientes" class="space-y-3"></div>
+    </main>
 
-        <button onclick="abrirModal()" class="fixed bottom-12 right-12 w-28 h-28 bg-sky-500 text-white rounded-full shadow-2xl flex items-center justify-center text-7xl font-light active:scale-90 transition-all z-20">
-            +
-        </button>
-    </div>
+    <button onclick="abrirModal()" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl z-20 active:scale-90 transition-all">+</button>
 
-    <div id="modal" class="hidden fixed inset-0 bg-slate-900/95 backdrop-blur-xl flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-2xl p-12 shadow-2xl modal-scroll border-t-[20px] border-sky-500">
-            <h2 id="modalTitulo" class="font-black text-4xl text-slate-800 mb-10 uppercase italic">Novo Cadastro</h2>
-            <div class="space-y-8">
-                <input type="text" id="nome" placeholder="NOME COMPLETO" class="w-full border-4 border-slate-50 p-8 rounded-[2.5rem] bg-slate-50 font-black text-2xl uppercase">
-                <div class="grid grid-cols-2 gap-6">
-                    <input type="text" id="nid" placeholder="NID" class="w-full border-4 border-slate-50 p-8 rounded-[2.5rem] bg-slate-50 font-black text-2xl uppercase">
-                    <input type="number" id="idade" placeholder="IDADE" class="w-full border-4 border-slate-50 p-8 rounded-[2.5rem] bg-slate-50 font-black text-2xl">
+    <div id="modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-30">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl modal-scroll">
+            <h2 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">Novo Registro</h2>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="nid" placeholder="NID" class="border p-3 rounded-xl bg-slate-50 outline-none uppercase font-bold text-sm">
+                    <input type="number" id="idade" placeholder="Idade" class="border p-3 rounded-xl bg-slate-50 outline-none">
                 </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <select id="diagnostico" class="border-4 border-slate-50 p-8 rounded-[2.5rem] bg-slate-100 font-black text-xl">
-                        <option value="">FORMA DX</option>
-                        <option value="Baciloscopia +">Baciloscopia +</option>
-                        <option value="GeneXpert">GeneXpert</option>
-                        <option value="Clínico">Clínico</option>
-                        <option value="Extra-Pulmonar">Extra-Pulmonar</option>
+                <input type="text" id="nome" placeholder="Nome do Paciente" class="w-full border p-3 rounded-xl bg-slate-50 outline-none uppercase text-sm font-medium">
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="sexo" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm font-medium">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
                     </select>
-                    <select id="estado" class="border-4 border-slate-50 p-8 rounded-[2.5rem] bg-sky-50 font-black text-xl text-sky-700">
-                        <option value="Em Tratamento">🔄 EM TRATAMENTO</option>
-                        <option value="Curado">✅ CURADO</option>
-                        <option value="Abandono">⚠️ ABANDONO</option>
-                        <option value="Óbito">⚰️ ÓBITO</option>
-                        <option value="Transferido">✈️ TRANSFERIDO</option>
+                    <input type="tel" id="contacto" placeholder="Telefone" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm font-medium">
+                </div>
+                <div class="p-4 bg-slate-100 rounded-2xl space-y-3">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase">Classificação e Regime</label>
+                    <select id="tipo" onchange="atualizarRegimes()" class="w-full border p-3 rounded-xl bg-white outline-none font-bold text-sm">
+                        <option value="Sensível">TB SENSÍVEL</option>
+                        <option value="Resistente">TB RESISTENTE</option>
                     </select>
+                    <select id="regime" class="w-full border p-3 rounded-xl bg-white outline-none text-sm font-medium"></select>
                 </div>
-                <div class="p-10 bg-sky-50 rounded-[3.5rem] border-4 border-sky-100 space-y-8">
-                    <select id="tipo" onchange="atualizarRegimes()" class="w-full p-8 rounded-[2rem] font-black text-3xl text-sky-800">
-                        <option value="Sensível">🟢 TB SENSÍVEL</option>
-                        <option value="Resistente">🔴 TB RESISTENTE</option>
-                    </select>
-                    <select id="regime" class="w-full p-8 rounded-[2rem] font-black text-2xl text-slate-600"></select>
-                </div>
-                <div class="px-6">
-                    <label class="font-black text-xl text-slate-400 uppercase italic">Data de Início</label>
-                    <input type="date" id="dataInicio" class="w-full border-b-8 border-sky-500 p-6 font-black text-5xl text-sky-600 outline-none mt-2">
-                </div>
+                <input type="date" id="dataInicio" class="w-full border p-3 rounded-xl bg-slate-50 outline-none font-bold">
             </div>
-            <button onclick="salvarPaciente()" class="w-full mt-14 py-10 btn-blue text-4xl uppercase shadow-2xl">GRAVAR DADOS</button>
+            <div class="flex gap-2 mt-6">
+                <button onclick="fecharModal()" class="flex-1 py-4 text-slate-400 font-bold text-sm uppercase">Sair</button>
+                <button onclick="salvarPaciente()" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase shadow-lg">Salvar</button>
+            </div>
         </div>
     </div>
 
     <script>
         let pacientes = JSON.parse(localStorage.getItem('tb_pacientes')) || [];
-        let editandoId = null;
 
-        function validarAcesso() {
-            if(document.getElementById('userLogin').value.toLowerCase() === "tbvanduzi" && document.getElementById('passLogin').value === "2026") {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                sessionStorage.setItem('logado', 'sim');
-                renderizar();
-            }
-        }
-        if(sessionStorage.getItem('logado') === 'sim') {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appContent').style.display = 'block';
-        }
-        function logout() { sessionStorage.removeItem('logado'); location.reload(); }
+        function abrirModal() { document.getElementById('modal').classList.remove('hidden'); atualizarRegimes(); }
+        function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
 
         function atualizarRegimes() {
             const tipo = document.getElementById('tipo').value;
@@ -143,141 +97,96 @@
                 '<option value="2HRZE/4HR">2HRZE/4HR</option>' : '<option value="BPaL">BPaL</option>';
         }
 
-        function abrirModal(id = null) {
-            editandoId = id;
-            if(id) {
-                const p = pacientes.find(p => p.id === id);
-                document.getElementById('nid').value = p.nid;
-                document.getElementById('nome').value = p.nome;
-                document.getElementById('idade').value = p.idade;
-                document.getElementById('diagnostico').value = p.diagnostico || "";
-                document.getElementById('estado').value = p.estado || "Em Tratamento";
-                document.getElementById('tipo').value = p.tipo;
-                document.getElementById('dataInicio').value = p.dataInicio;
-                document.getElementById('modalTitulo').innerText = "Atualizar Paciente";
-            } else {
-                document.getElementById('modalTitulo').innerText = "Novo Cadastro";
-                document.querySelectorAll('#modal input').forEach(i => i.value = '');
-            }
-            document.getElementById('modal').classList.remove('hidden');
-            atualizarRegimes();
-        }
-
-        function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
-
         function salvarPaciente() {
             const p = {
-                id: editandoId || Date.now(),
+                id: Date.now(),
                 nid: document.getElementById('nid').value,
                 nome: document.getElementById('nome').value,
                 idade: document.getElementById('idade').value,
-                diagnostico: document.getElementById('diagnostico').value,
-                estado: document.getElementById('estado').value,
+                sexo: document.getElementById('sexo').value,
+                contacto: document.getElementById('contacto').value,
                 tipo: document.getElementById('tipo').value,
                 regime: document.getElementById('regime').value,
                 dataInicio: document.getElementById('dataInicio').value
             };
-            if (!p.nome || !p.dataInicio) return alert("Erro: Nome e Data obrigatórios!");
-            if(editandoId) {
-                const idx = pacientes.findIndex(item => item.id === editandoId);
-                pacientes[idx] = p;
-            } else {
-                pacientes.push(p);
-            }
+            if (!p.nome || !p.dataInicio) return alert("Erro: Nome e Data são obrigatórios!");
+            pacientes.push(p);
             localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-            fecharModal(); renderizar();
+            fecharModal(); renderizar(); limparForm();
         }
 
-        function renderizar(filtroAlerta = null) {
-            if(sessionStorage.getItem('logado') !== 'sim') return;
-            const lista = document.getElementById('listaPacientes');
-            const painel = document.getElementById('painelAlertas');
-            const busca = document.getElementById('inputBusca').value.toLowerCase();
-            const hoje = new Date();
+        function limparForm() { document.querySelectorAll('#modal input').forEach(i => i.value = ''); }
+        function toggleDetalhes(id) { document.getElementById(`detalhe-${id}`).classList.toggle('hidden'); }
 
-            // Lógica de Alerta de Controlos
-            const controlosHoje = pacientes.filter(p => {
-                if(p.estado !== "Em Tratamento") return false;
-                const dias = Math.floor((hoje - new Date(p.dataInicio)) / 86400000);
-                if(p.tipo === "Sensível") {
-                    return (dias === 53 || dias === 145);
-                } else {
-                    // TB Resistente: BK Mensal (30, 60, 90, 120, 150, 180 dias)
-                    return [30, 60, 90, 120, 150, 180].includes(dias);
+        function remover(id) {
+            if(confirm("Apagar este registro?")) {
+                pacientes = pacientes.filter(p => p.id !== id);
+                localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
+                renderizar();
+            }
+        }
+
+        // --- NOVA LÓGICA DE EXPORTAR/IMPORTAR JS ---
+
+        function exportarDadosJS() {
+            if (pacientes.length === 0) return alert("Não há dados para exportar.");
+            const dataStr = JSON.stringify(pacientes, null, 2);
+            const blob = new Blob([dataStr], { type: "application/javascript" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup_pacientes_${new Date().toISOString().slice(0,10)}.js`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importarDadosJS(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    if (confirm(`Importar ${dados.length} registros? Isso substituirá os atuais.`)) {
+                        pacientes = dados;
+                        localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
+                        renderizar();
+                        alert("Dados importados com sucesso!");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo. Certifique-se que é um arquivo JS/JSON válido.");
                 }
-            });
+            };
+            reader.readAsText(file);
+        }
 
-            const elegiveisFim = pacientes.filter(p => {
-                const dias = Math.floor((hoje - new Date(p.dataInicio)) / 86400000);
-                return p.estado === "Em Tratamento" && dias >= 180;
-            });
+        // --- FIM DA NOVA LÓGICA ---
 
-            painel.innerHTML = '';
-            if(elegiveisFim.length > 0) {
-                painel.innerHTML += `<div onclick="renderizar('fim')" class="alerta-pulse bg-orange-600 p-10 rounded-[3rem] text-white shadow-2xl flex justify-between items-center cursor-pointer"><div><p class="font-black text-6xl">${elegiveisFim.length}</p><p class="font-black text-xl uppercase">Fim de Tratamento</p></div><span class="text-7xl">🏁</span></div>`;
-            }
-            if(controlosHoje.length > 0) {
-                painel.innerHTML += `<div onclick="renderizar('controlo')" class="bg-sky-600 p-10 rounded-[3rem] text-white shadow-2xl flex justify-between items-center cursor-pointer border-l-[20px] border-white/20"><div><p class="font-black text-6xl">${controlosHoje.length}</p><p class="font-black text-xl uppercase">Controlos de BK Hoje</p></div><span class="text-7xl">🔬</span></div>`;
-            }
-
-            let filtrados = pacientes;
-            if(filtroAlerta === 'fim') filtrados = elegiveisFim;
-            if(filtroAlerta === 'controlo') filtrados = controlosHoje;
-            if(busca) filtrados = filtrados.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
-
+        function renderizar() {
+            const lista = document.getElementById('listaPacientes');
+            const busca = document.getElementById('inputBusca').value.toLowerCase();
+            const filtrados = pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
+            
             document.getElementById('dashTotal').innerText = pacientes.length;
-            document.getElementById('dashAtivos').innerText = pacientes.filter(p => p.estado === "Em Tratamento").length;
+            document.getElementById('dashSensivel').innerText = pacientes.filter(p => p.tipo === "Sensível").length;
             document.getElementById('dashResistente').innerText = pacientes.filter(p => p.tipo === "Resistente").length;
 
-            lista.innerHTML = filtrados.reverse().map(p => {
-                const dInicio = new Date(p.dataInicio);
-                const dias = Math.floor((hoje - dInicio) / 86400000);
-                
-                // Cálculo de datas de controlo
-                let htmlControlos = "";
-                if(p.tipo === "Sensível") {
-                    htmlControlos = `
-                        <p>🔬 2º Mês (53º dia): ${new Date(dInicio.getTime() + 53*86400000).toLocaleDateString()}</p>
-                        <p>🔬 5º Mês (145º dia): ${new Date(dInicio.getTime() + 145*86400000).toLocaleDateString()}</p>`;
-                } else {
-                    htmlControlos = `<p class="font-black text-sky-600 mb-2">📅 CONTROLO MENSAL (BK):</p><div class="grid grid-cols-2 gap-2 text-[15px]">`;
-                    for(let m=1; m<=6; m++) {
-                        htmlControlos += `<p>${m}º Mês: ${new Date(dInicio.getTime() + (m*30)*86400000).toLocaleDateString()}</p>`;
-                    }
-                    htmlControlos += `</div>`;
-                }
-
-                const cores = {"Em Tratamento": "bg-sky-100 text-sky-700", "Curado": "bg-green-100 text-green-700", "Abandono": "bg-yellow-100 text-yellow-700", "Óbito": "bg-red-100 text-red-700", "Transferido": "bg-slate-200 text-slate-700"};
-
-                return `
-                <div class="paciente-card border-l-[25px] ${p.tipo === 'Resistente' ? 'border-red-600' : 'border-green-600'}">
-                    <div onclick="this.nextElementSibling.classList.toggle('hidden')" class="p-10 cursor-pointer">
-                        <div class="flex justify-between items-start mb-4">
-                            <p class="font-black text-slate-400 text-xl tracking-widest uppercase">NID: ${p.nid}</p>
-                            <span class="px-6 py-2 rounded-3xl font-black text-lg uppercase ${cores[p.estado]}">${p.estado}</span>
+            lista.innerHTML = filtrados.reverse().map(p => `
+                <div class="paciente-card bg-white shadow-sm border-l-4 ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'} mb-2">
+                    <div onclick="toggleDetalhes(${p.id})" class="p-4 flex justify-between items-center cursor-pointer">
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">NID: ${p.nid}</p>
+                            <h3 class="font-bold text-slate-800 uppercase text-sm">${p.nome}</h3>
                         </div>
-                        <h3 class="font-black text-slate-900 text-4xl uppercase leading-tight mb-4">${p.nome}</h3>
-                        <div class="flex flex-wrap gap-4">
-                            <span class="bg-slate-100 px-5 py-3 rounded-2xl text-lg font-black text-slate-500 uppercase italic">🩺 DX: ${p.diagnostico || 'S/ DX'}</span>
-                            <span class="bg-sky-50 px-5 py-3 rounded-2xl text-lg font-black text-sky-600 uppercase italic">📅 ${dias} DIAS</span>
-                        </div>
+                        <span class="text-[9px] font-black uppercase text-blue-600 bg-blue-50 px-2 py-1 rounded">${p.regime}</span>
                     </div>
-                    <div class="hidden p-10 bg-slate-50 border-t-8 border-slate-100 space-y-8 rounded-b-[2.5rem]">
-                        <div class="bg-white p-8 rounded-3xl shadow-sm border-2 border-slate-100 font-bold text-slate-700">
-                            ${htmlControlos}
-                        </div>
-                        <div class="flex gap-4">
-                            <button onclick="abrirModal(${p.id})" class="flex-1 bg-sky-500 text-white py-8 rounded-[2rem] font-black text-2xl uppercase">ATUALIZAR / EDITAR</button>
-                            <button onclick="remover(${p.id})" class="px-6 text-red-300 font-bold uppercase text-xs">Excluir</button>
-                        </div>
+                    <div id="detalhe-${p.id}" class="hidden p-4 bg-slate-50 border-t text-[11px] space-y-3">
+                        <p><b>Contacto:</b> ${p.contacto}</p>
+                        <button onclick="remover(${p.id})" class="w-full text-red-400 font-bold text-[9px] uppercase">Apagar</button>
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            `).join('');
         }
-
-        function remover(id) { if(confirm("Eliminar permanentemente?")) { pacientes = pacientes.filter(p => p.id !== id); localStorage.setItem('tb_pacientes', JSON.stringify(pacientes)); renderizar(); } }
-        function exportarDados() { const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pacientes)); const a = document.createElement('a'); a.href = data; a.download = "tb_vanduzi_2026.json"; a.click(); }
-        
         renderizar();
     </script>
 </body>

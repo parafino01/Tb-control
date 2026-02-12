@@ -9,14 +9,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .modal-scroll { max-height: 85vh; overflow-y: auto; }
-        .paciente-card { transition: all 0.2s ease; }
-        .paciente-card:active { transform: scale(0.98); }
+        .paciente-card { transition: all 0.2s ease; border-radius: 1.25rem; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 pb-24">
+<body class="bg-slate-50 pb-24 text-slate-900">
 
     <header class="bg-slate-800 p-5 text-white sticky top-0 z-10 shadow-lg">
-        <h1 class="font-black text-xl mb-3 tracking-tighter text-center italic">TB-CONTROL <span class="text-blue-400">PRO</span></h1>
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="font-black text-xl tracking-tighter italic">TB-CONTROL</h1>
+            <div class="flex gap-2">
+                <button onclick="exportarDados()" class="bg-slate-700 p-2 rounded-lg text-[10px] font-bold border border-slate-600 active:bg-slate-600">EXPORTAR</button>
+                <button onclick="document.getElementById('fileInput').click()" class="bg-slate-700 p-2 rounded-lg text-[10px] font-bold border border-slate-600 active:bg-slate-600">IMPORTAR</button>
+                <input type="file" id="fileInput" class="hidden" accept=".json" onchange="importarDados(event)">
+            </div>
+        </div>
+        
         <div class="grid grid-cols-3 gap-2">
             <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-blue-500 text-center">
                 <p class="text-[9px] uppercase font-bold text-blue-300">Total</p>
@@ -34,44 +41,34 @@
     </header>
 
     <main class="p-4">
-        <div class="mb-6 relative">
-            <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Buscar por Nome ou NID..." 
-                class="w-full bg-white border border-slate-200 p-4 pl-12 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+        <div class="relative mb-6">
+            <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Pesquisar Nome ou NID..." 
+                class="w-full bg-white border border-slate-200 p-4 pl-12 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium">
+            <svg class="w-5 h-5 absolute left-4 top-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2"></path></svg>
         </div>
 
-        <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex justify-between">
-            <span>Lista de Seguimento</span>
-            <span id="contadorFiltro" class="text-blue-500"></span>
-        </h2>
-        <div id="listaPacientes" class="space-y-2">
-            </div>
+        <div id="listaPacientes" class="space-y-3"></div>
     </main>
 
-    <button onclick="abrirModal()" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl font-light active:bg-blue-700 z-20">
-        +
-    </button>
+    <button onclick="abrirModal()" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl z-20 active:scale-90 transition-all">+</button>
 
     <div id="modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-30">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl modal-scroll">
-            <h2 class="font-bold text-xl mb-4 text-slate-800">Nova Inscrição</h2>
+            <h2 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">Novo Registro</h2>
             
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="nid" placeholder="NID" class="border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 uppercase font-bold text-sm">
+                    <input type="text" id="nid" placeholder="NID" class="border p-3 rounded-xl bg-slate-50 outline-none uppercase font-bold text-sm">
                     <input type="number" id="idade" placeholder="Idade" class="border p-3 rounded-xl bg-slate-50 outline-none">
                 </div>
-                
-                <input type="text" id="nome" placeholder="Nome Completo" class="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 uppercase text-sm font-medium">
+                <input type="text" id="nome" placeholder="Nome do Paciente" class="w-full border p-3 rounded-xl bg-slate-50 outline-none uppercase text-sm font-medium">
 
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="sexo" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm">
+                    <select id="sexo" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm font-medium">
                         <option value="Masculino">Masculino</option>
                         <option value="Feminino">Feminino</option>
                     </select>
-                    <input type="tel" id="contacto" placeholder="Contacto" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm">
+                    <input type="tel" id="contacto" placeholder="Telefone" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm font-medium">
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -86,29 +83,26 @@
                 </div>
 
                 <div class="p-4 bg-slate-100 rounded-2xl space-y-3">
-                    <label class="block text-[10px] font-black text-slate-500 uppercase italic text-center">Classificação Técnica</label>
+                    <label class="block text-[10px] font-black text-slate-500 uppercase">Classificação e Regime</label>
                     <select id="tipo" onchange="atualizarRegimes()" class="w-full border p-3 rounded-xl bg-white outline-none font-bold text-sm">
                         <option value="Sensível">TB SENSÍVEL</option>
                         <option value="Resistente">TB RESISTENTE</option>
                     </select>
-                    
-                    <select id="regime" class="w-full border p-3 rounded-xl bg-white outline-none text-sm font-medium">
-                        </select>
+                    <select id="regime" class="w-full border p-3 rounded-xl bg-white outline-none text-sm font-medium"></select>
                 </div>
                 
-                <label class="block text-[10px] font-black text-slate-400 uppercase ml-1">Data Início Tratamento</label>
-                <input type="date" id="dataInicio" class="w-full border p-3 rounded-xl bg-slate-50 outline-none">
+                <input type="date" id="dataInicio" class="w-full border p-3 rounded-xl bg-slate-50 outline-none font-bold">
             </div>
 
             <div class="flex gap-2 mt-6">
-                <button onclick="fecharModal()" class="flex-1 py-4 text-slate-400 font-bold text-sm">CANCELAR</button>
-                <button onclick="salvarPaciente()" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg text-sm uppercase">Confirmar</button>
+                <button onclick="fecharModal()" class="flex-1 py-4 text-slate-400 font-bold text-sm uppercase">Sair</button>
+                <button onclick="salvarPaciente()" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm uppercase shadow-lg">Salvar</button>
             </div>
         </div>
     </div>
 
     <script>
-        let pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
+        let pacientes = JSON.parse(localStorage.getItem('tb_pacientes')) || [];
 
         function abrirModal() { 
             document.getElementById('modal').classList.remove('hidden');
@@ -118,26 +112,10 @@
 
         function atualizarRegimes() {
             const tipo = document.getElementById('tipo').value;
-            const regimeSelect = document.getElementById('regime');
-            regimeSelect.innerHTML = '';
-            
-            if (tipo === "Sensível") {
-                ["2HRZE/4HR", "2HRZ+E/4HR"].forEach(r => {
-                    regimeSelect.innerHTML += `<option value="${r}">${r}</option>`;
-                });
-            } else {
-                regimeSelect.innerHTML += `<option value="BPaL">BPaL</option>`;
-            }
-        }
-
-        function calcularControlos(dataInicio, tipo) {
-            const inicio = new Date(dataInicio);
-            if (tipo === "Sensível") {
-                let d53 = new Date(inicio); d53.setDate(inicio.getDate() + 53);
-                let d145 = new Date(inicio); d145.setDate(inicio.getDate() + 145);
-                return `53º: ${d53.toLocaleDateString()} | 145º: ${d145.toLocaleDateString()}`;
-            }
-            return "Controlo Mensal (30 em 30 dias)";
+            const rs = document.getElementById('regime');
+            rs.innerHTML = tipo === "Sensível" ? 
+                '<option value="2HRZE/4HR">2HRZE/4HR</option><option value="2HRZ+E/4HR">2HRZ+E/4HR</option>' : 
+                '<option value="BPaL">BPaL</option>';
         }
 
         function salvarPaciente() {
@@ -154,89 +132,105 @@
                 regime: document.getElementById('regime').value,
                 dataInicio: document.getElementById('dataInicio').value
             };
-
-            if (!p.nome || !p.dataInicio) return alert("Nome e Data são obrigatórios!");
-
+            if (!p.nome || !p.dataInicio) return alert("Erro: Nome e Data são obrigatórios!");
             pacientes.push(p);
-            localStorage.setItem('pacientes', JSON.stringify(pacientes));
+            armazenar();
             fecharModal();
             renderizar();
             limparForm();
         }
 
-        function limparForm() {
-            document.querySelectorAll('#modal input').forEach(i => i.value = '');
+        function armazenar() { localStorage.setItem('tb_pacientes', JSON.stringify(pacientes)); }
+        function limparForm() { document.querySelectorAll('#modal input').forEach(i => i.value = ''); }
+        function toggleDetalhes(id) { document.getElementById(`detalhe-${id}`).classList.toggle('hidden'); }
+
+        function remover(id) {
+            if(confirm("Deseja apagar este registro?")) {
+                pacientes = pacientes.filter(p => p.id !== id);
+                armazenar();
+                renderizar();
+            }
         }
 
-        function toggleDetalhes(id) {
-            const el = document.getElementById(`detalhe-${id}`);
-            el.classList.toggle('hidden');
+        // FUNÇÃO EXPORTAR
+        function exportarDados() {
+            if (pacientes.length === 0) return alert("Não há dados para exportar.");
+            const dataStr = JSON.stringify(pacientes, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const dataAtual = new Date().toLocaleDateString().replace(/\//g, '-');
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', `backup_tbcontrol_${dataAtual}.json`);
+            linkElement.click();
+        }
+
+        // FUNÇÃO IMPORTAR
+        function importarDados(event) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importados = JSON.parse(e.target.result);
+                    if (confirm(`Deseja importar ${importados.length} pacientes? Isso substituirá sua lista atual.`)) {
+                        pacientes = importados;
+                        armazenar();
+                        renderizar();
+                        alert("Dados importados com sucesso!");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo de backup.");
+                }
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+
+        function calcularControlos(data, tipo) {
+            const inicio = new Date(data);
+            if (tipo === "Sensível") {
+                let d53 = new Date(inicio); d53.setDate(inicio.getDate() + 53);
+                let d145 = new Date(inicio); d145.setDate(inicio.getDate() + 145);
+                return `53º: ${d53.toLocaleDateString()} | 145º: ${d145.toLocaleDateString()}`;
+            }
+            return "Controlo Mensal Recomendado";
         }
 
         function renderizar() {
             const lista = document.getElementById('listaPacientes');
-            const termoBusca = document.getElementById('inputBusca').value.toLowerCase();
-            
-            // Filtragem inteligente
-            const pacientesFiltrados = pacientes.filter(p => 
-                p.nome.toLowerCase().includes(termoBusca) || 
-                p.nid.toLowerCase().includes(termoBusca)
-            );
+            const busca = document.getElementById('inputBusca').value.toLowerCase();
+            const filtrados = pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
 
-            // Atualiza Dashboard (Sempre com base no total)
-            const sensiveis = pacientes.filter(p => p.tipo === "Sensível").length;
-            const resistentes = pacientes.filter(p => p.tipo === "Resistente").length;
             document.getElementById('dashTotal').innerText = pacientes.length;
-            document.getElementById('dashSensivel').innerText = sensiveis;
-            document.getElementById('dashResistente').innerText = resistentes;
+            document.getElementById('dashSensivel').innerText = pacientes.filter(p => p.tipo === "Sensível").length;
+            document.getElementById('dashResistente').innerText = pacientes.filter(p => p.tipo === "Resistente").length;
 
-            // Contador de busca
-            document.getElementById('contadorFiltro').innerText = termoBusca ? `${pacientesFiltrados.length} encontrados` : "";
-
-            if (pacientesFiltrados.length === 0) {
-                lista.innerHTML = `<div class="text-center py-10 text-slate-400 italic">${termoBusca ? 'Nenhum resultado' : 'Nenhum paciente cadastrado'}</div>`;
+            if (filtrados.length === 0) {
+                lista.innerHTML = '<div class="text-center py-20 opacity-20 font-bold uppercase">Nenhum Registro</div>';
                 return;
             }
 
-            lista.innerHTML = pacientesFiltrados.map(p => `
-                <div class="paciente-card bg-white rounded-2xl shadow-sm border-l-4 ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'} overflow-hidden mb-2">
+            lista.innerHTML = filtrados.reverse().map(p => `
+                <div class="paciente-card bg-white shadow-sm border-l-4 ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'} mb-2 overflow-hidden">
                     <div onclick="toggleDetalhes(${p.id})" class="p-4 flex justify-between items-center cursor-pointer">
                         <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">NID: ${p.nid}</p>
+                            <p class="text-[9px] font-bold text-slate-400 tracking-widest">NID: ${p.nid}</p>
                             <h3 class="font-bold text-slate-800 uppercase text-sm">${p.nome}</h3>
                         </div>
-                        <div class="text-right flex flex-col items-end">
-                            <span class="text-[9px] px-2 py-0.5 rounded-full font-black ${p.tipo === 'Resistente' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}">
-                                ${p.regime}
-                            </span>
-                        </div>
+                        <span class="text-[9px] font-black uppercase text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100">${p.regime}</span>
                     </div>
-                    
-                    <div id="detalhe-${p.id}" class="hidden p-4 bg-slate-50 border-t border-slate-100 text-[11px] space-y-3">
-                        <div class="grid grid-cols-2 gap-2 text-slate-600">
-                            <p><b>Idade:</b> ${p.idade}</p>
-                            <p><b>Sexo:</b> ${p.sexo}</p>
+                    <div id="detalhe-${p.id}" class="hidden p-4 bg-slate-50 border-t text-[11px] space-y-3 animate-in slide-in-from-top duration-200">
+                        <div class="grid grid-cols-2 gap-2 text-slate-600 font-medium">
+                            <p><b>Idade/Sexo:</b> ${p.idade} anos / ${p.sexo}</p>
                             <p><b>Contacto:</b> ${p.contacto}</p>
                             <p><b>Diagnóstico:</b> ${p.diagnostico}</p>
                             <p><b>Forma:</b> ${p.caracterizacao}</p>
-                            <p><b>Início:</b> ${new Date(p.dataInicio).toLocaleDateString()}</p>
                         </div>
-                        <div class="bg-blue-600 p-3 rounded-xl text-white shadow-inner">
-                            <p class="font-black uppercase text-[8px] mb-1 opacity-80 italic text-center">Agenda de Controlos</p>
-                            <p class="text-center font-bold text-xs">${calcularControlos(p.dataInicio, p.tipo)}</p>
+                        <div class="bg-blue-600 p-3 rounded-2xl text-white text-center">
+                            <p class="font-black text-[8px] opacity-60 italic mb-1 uppercase">Cronograma Clínico</p>
+                            <p class="font-bold text-xs">${calcularControlos(p.dataInicio, p.tipo)}</p>
                         </div>
-                        <button onclick="remover(${p.id})" class="w-full py-2 text-red-400 font-bold uppercase text-[9px] tracking-widest">Excluir Paciente</button>
+                        <button onclick="remover(${p.id})" class="w-full text-red-400 font-bold text-[9px] py-2 uppercase tracking-tighter">Apagar Registro Permanentemente</button>
                     </div>
                 </div>
-            `).reverse().join('');
-        }
-
-        function remover(id) {
-            if(confirm("Tem certeza que deseja apagar este registro permanentemente?")) {
-                pacientes = pacientes.filter(p => p.id !== id);
-                localStorage.setItem('pacientes', JSON.stringify(pacientes));
-                renderizar();
-            }
+            `).join('');
         }
 
         renderizar();

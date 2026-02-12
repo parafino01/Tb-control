@@ -3,84 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2563eb">
-    <title>TB-CONTROL</title>
+    <meta name="theme-color" content="#1e293b">
+    <title>TB-CONTROL PRO</title>
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .modal-scroll { max-height: 80vh; overflow-y: auto; }
+        .modal-scroll { max-height: 85vh; overflow-y: auto; }
+        .paciente-card { transition: all 0.2s ease; }
+        .paciente-card:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 pb-10">
+<body class="bg-slate-50 text-slate-900 pb-24">
 
-    <header class="p-6 bg-white border-b sticky top-0 z-10 shadow-sm">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="font-bold text-xl tracking-tight text-blue-700">TB-CONTROL</h1>
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Gestão Clínica Especializada</p>
+    <header class="bg-slate-800 p-5 text-white sticky top-0 z-10 shadow-lg">
+        <h1 class="font-black text-xl mb-3 tracking-tighter text-center italic">TB-CONTROL <span class="text-blue-400">PRO</span></h1>
+        <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-blue-500 text-center">
+                <p class="text-[9px] uppercase font-bold text-blue-300">Total</p>
+                <p id="dashTotal" class="text-xl font-black">0</p>
             </div>
-            <div class="text-right">
-                <p id="totalAtivos" class="text-2xl font-black text-slate-800 leading-none">0</p>
-                <p class="text-[9px] text-gray-400 uppercase font-bold">Pacientes</p>
+            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-green-500 text-center">
+                <p class="text-[9px] uppercase font-bold text-green-300">Sensível</p>
+                <p id="dashSensivel" class="text-xl font-black">0</p>
+            </div>
+            <div class="bg-slate-700/50 p-2 rounded-lg border-b-4 border-red-500 text-center">
+                <p class="text-[9px] uppercase font-bold text-red-300">Resistente</p>
+                <p id="dashResistente" class="text-xl font-black">0</p>
             </div>
         </div>
     </header>
 
-    <main class="p-4 space-y-4">
-        <button onclick="abrirModal()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+    <main class="p-4">
+        <div class="mb-6 relative">
+            <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="Buscar por Nome ou NID..." 
+                class="w-full bg-white border border-slate-200 p-4 pl-12 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-4 top-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            ADICIONAR NOVO PACIENTE
-        </button>
+        </div>
 
-        <div id="listaPacientes" class="space-y-3">
+        <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex justify-between">
+            <span>Lista de Seguimento</span>
+            <span id="contadorFiltro" class="text-blue-500"></span>
+        </h2>
+        <div id="listaPacientes" class="space-y-2">
             </div>
     </main>
 
-    <div id="modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-20">
+    <button onclick="abrirModal()" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl font-light active:bg-blue-700 z-20">
+        +
+    </button>
+
+    <div id="modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-30">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl modal-scroll">
-            <h2 class="font-bold text-xl mb-4 text-slate-800 border-b pb-2">Novo Registro</h2>
+            <h2 class="font-bold text-xl mb-4 text-slate-800">Nova Inscrição</h2>
             
             <div class="space-y-3">
-                <input type="text" id="nid" placeholder="NID" class="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="nome" placeholder="Nome Completo" class="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
-                
                 <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="nid" placeholder="NID" class="border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 uppercase font-bold text-sm">
                     <input type="number" id="idade" placeholder="Idade" class="border p-3 rounded-xl bg-slate-50 outline-none">
-                    <select id="sexo" class="border p-3 rounded-xl bg-slate-50 outline-none">
-                        <option value="">Sexo</option>
-                        <option value="Masculino">Masc</option>
-                        <option value="Feminino">Fem</option>
+                </div>
+                
+                <input type="text" id="nome" placeholder="Nome Completo" class="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500 uppercase text-sm font-medium">
+
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="sexo" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
                     </select>
+                    <input type="tel" id="contacto" placeholder="Contacto" class="border p-3 rounded-xl bg-slate-50 outline-none text-sm">
                 </div>
 
-                <input type="tel" id="contacto" placeholder="Contacto" class="w-full border p-3 rounded-xl bg-slate-50 outline-none">
-                
-                <label class="block text-xs font-bold text-gray-400 ml-1">CARACTERIZAÇÃO</label>
-                <select id="caracterizacao" class="w-full border p-3 rounded-xl bg-slate-50 outline-none">
-                    <option value="Pulmonar">Pulmonar</option>
-                    <option value="Extra-Pulmonar">Extra-Pulmonar</option>
-                </select>
-
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="diagnostico" class="border p-3 rounded-xl bg-slate-50 outline-none">
+                    <select id="caracterizacao" class="border p-3 rounded-xl bg-slate-50 outline-none text-[10px] font-bold uppercase">
+                        <option value="Pulmonar">Pulmonar</option>
+                        <option value="Extra-Pulmonar">Extra-Pulmonar</option>
+                    </select>
+                    <select id="diagnostico" class="border p-3 rounded-xl bg-slate-50 outline-none text-[10px] font-bold uppercase">
                         <option value="Bacteriológico">Bacteriológico</option>
                         <option value="Clínico">Clínico</option>
                     </select>
-                    <select id="tipo" class="border p-3 rounded-xl bg-slate-50 outline-none bg-yellow-50 font-bold">
-                        <option value="Sensível">Sensível</option>
-                        <option value="Resistente">Resistente</option>
+                </div>
+
+                <div class="p-4 bg-slate-100 rounded-2xl space-y-3">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase italic text-center">Classificação Técnica</label>
+                    <select id="tipo" onchange="atualizarRegimes()" class="w-full border p-3 rounded-xl bg-white outline-none font-bold text-sm">
+                        <option value="Sensível">TB SENSÍVEL</option>
+                        <option value="Resistente">TB RESISTENTE</option>
                     </select>
+                    
+                    <select id="regime" class="w-full border p-3 rounded-xl bg-white outline-none text-sm font-medium">
+                        </select>
                 </div>
                 
-                <label class="block text-xs font-bold text-gray-400 ml-1">INÍCIO DO TRATAMENTO</label>
+                <label class="block text-[10px] font-black text-slate-400 uppercase ml-1">Data Início Tratamento</label>
                 <input type="date" id="dataInicio" class="w-full border p-3 rounded-xl bg-slate-50 outline-none">
             </div>
 
             <div class="flex gap-2 mt-6">
-                <button onclick="fecharModal()" class="flex-1 py-3 text-gray-400 font-bold">CANCELAR</button>
-                <button onclick="salvarPaciente()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md">SALVAR</button>
+                <button onclick="fecharModal()" class="flex-1 py-4 text-slate-400 font-bold text-sm">CANCELAR</button>
+                <button onclick="salvarPaciente()" class="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg text-sm uppercase">Confirmar</button>
             </div>
         </div>
     </div>
@@ -88,26 +110,34 @@
     <script>
         let pacientes = JSON.parse(localStorage.getItem('pacientes')) || [];
 
-        function abrirModal() { document.getElementById('modal').classList.remove('hidden'); }
+        function abrirModal() { 
+            document.getElementById('modal').classList.remove('hidden');
+            atualizarRegimes();
+        }
         function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
 
-        function formatarData(dataStr) {
-            const data = new Date(dataStr);
-            return data.toLocaleDateString('pt-BR');
+        function atualizarRegimes() {
+            const tipo = document.getElementById('tipo').value;
+            const regimeSelect = document.getElementById('regime');
+            regimeSelect.innerHTML = '';
+            
+            if (tipo === "Sensível") {
+                ["2HRZE/4HR", "2HRZ+E/4HR"].forEach(r => {
+                    regimeSelect.innerHTML += `<option value="${r}">${r}</option>`;
+                });
+            } else {
+                regimeSelect.innerHTML += `<option value="BPaL">BPaL</option>`;
+            }
         }
 
         function calcularControlos(dataInicio, tipo) {
             const inicio = new Date(dataInicio);
-            let agenda = [];
-            
             if (tipo === "Sensível") {
                 let d53 = new Date(inicio); d53.setDate(inicio.getDate() + 53);
                 let d145 = new Date(inicio); d145.setDate(inicio.getDate() + 145);
-                agenda.push(`53º dia: ${formatarData(d53)}`, `145º dia: ${formatarData(d145)}`);
-            } else {
-                agenda.push("Controlo Mensal Recomendo");
+                return `53º: ${d53.toLocaleDateString()} | 145º: ${d145.toLocaleDateString()}`;
             }
-            return agenda;
+            return "Controlo Mensal (30 em 30 dias)";
         }
 
         function salvarPaciente() {
@@ -121,67 +151,95 @@
                 caracterizacao: document.getElementById('caracterizacao').value,
                 diagnostico: document.getElementById('diagnostico').value,
                 tipo: document.getElementById('tipo').value,
+                regime: document.getElementById('regime').value,
                 dataInicio: document.getElementById('dataInicio').value
             };
 
-            if (!p.nome || !p.dataInicio) return alert("Preencha Nome e Data de Início!");
+            if (!p.nome || !p.dataInicio) return alert("Nome e Data são obrigatórios!");
 
             pacientes.push(p);
             localStorage.setItem('pacientes', JSON.stringify(pacientes));
             fecharModal();
-            renderizarPacientes();
-            limparCampos();
+            renderizar();
+            limparForm();
         }
 
-        function limparCampos() {
-            document.querySelectorAll('input').forEach(i => i.value = '');
+        function limparForm() {
+            document.querySelectorAll('#modal input').forEach(i => i.value = '');
         }
 
-        function removerPaciente(id) {
-            if(confirm("Deseja apagar este registro?")) {
-                pacientes = pacientes.filter(p => p.id !== id);
-                localStorage.setItem('pacientes', JSON.stringify(pacientes));
-                renderizarPacientes();
-            }
+        function toggleDetalhes(id) {
+            const el = document.getElementById(`detalhe-${id}`);
+            el.classList.toggle('hidden');
         }
 
-        function renderizarPacientes() {
+        function renderizar() {
             const lista = document.getElementById('listaPacientes');
-            document.getElementById('totalAtivos').innerText = pacientes.length;
+            const termoBusca = document.getElementById('inputBusca').value.toLowerCase();
             
-            if (pacientes.length === 0) {
-                lista.innerHTML = '<div class="text-center py-20 opacity-30"><p class="font-bold">NENHUM PACIENTE</p></div>';
+            // Filtragem inteligente
+            const pacientesFiltrados = pacientes.filter(p => 
+                p.nome.toLowerCase().includes(termoBusca) || 
+                p.nid.toLowerCase().includes(termoBusca)
+            );
+
+            // Atualiza Dashboard (Sempre com base no total)
+            const sensiveis = pacientes.filter(p => p.tipo === "Sensível").length;
+            const resistentes = pacientes.filter(p => p.tipo === "Resistente").length;
+            document.getElementById('dashTotal').innerText = pacientes.length;
+            document.getElementById('dashSensivel').innerText = sensiveis;
+            document.getElementById('dashResistente').innerText = resistentes;
+
+            // Contador de busca
+            document.getElementById('contadorFiltro').innerText = termoBusca ? `${pacientesFiltrados.length} encontrados` : "";
+
+            if (pacientesFiltrados.length === 0) {
+                lista.innerHTML = `<div class="text-center py-10 text-slate-400 italic">${termoBusca ? 'Nenhum resultado' : 'Nenhum paciente cadastrado'}</div>`;
                 return;
             }
 
-            lista.innerHTML = pacientes.map(p => {
-                const controlos = calcularControlos(p.dataInicio, p.tipo);
-                return `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-black bg-slate-100 px-2 py-1 rounded text-slate-500 uppercase">NID: ${p.nid}</span>
-                        <button onclick="removerPaciente(${p.id})" class="text-red-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                        </button>
-                    </div>
-                    <h3 class="font-bold text-lg text-slate-800 uppercase">${p.nome}</h3>
-                    <div class="grid grid-cols-2 text-xs text-slate-500 mt-1 gap-y-1">
-                        <p><b>Idade:</b> ${p.idade} | ${p.sexo}</p>
-                        <p><b>Diagnóstico:</b> ${p.diagnostico}</p>
-                        <p><b>Forma:</b> ${p.caracterizacao}</p>
-                        <p><b>Tipo:</b> <span class="${p.tipo === 'Resistente' ? 'text-red-600 font-bold' : 'text-green-600 font-bold'}">${p.tipo}</span></p>
+            lista.innerHTML = pacientesFiltrados.map(p => `
+                <div class="paciente-card bg-white rounded-2xl shadow-sm border-l-4 ${p.tipo === 'Resistente' ? 'border-red-500' : 'border-green-500'} overflow-hidden mb-2">
+                    <div onclick="toggleDetalhes(${p.id})" class="p-4 flex justify-between items-center cursor-pointer">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">NID: ${p.nid}</p>
+                            <h3 class="font-bold text-slate-800 uppercase text-sm">${p.nome}</h3>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <span class="text-[9px] px-2 py-0.5 rounded-full font-black ${p.tipo === 'Resistente' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}">
+                                ${p.regime}
+                            </span>
+                        </div>
                     </div>
                     
-                    <div class="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                        <p class="text-[10px] font-bold text-blue-400 uppercase mb-1">Próximos Controlos:</p>
-                        ${controlos.map(c => `<p class="text-xs font-bold text-blue-800 tracking-tight">${c}</p>`).join('')}
+                    <div id="detalhe-${p.id}" class="hidden p-4 bg-slate-50 border-t border-slate-100 text-[11px] space-y-3">
+                        <div class="grid grid-cols-2 gap-2 text-slate-600">
+                            <p><b>Idade:</b> ${p.idade}</p>
+                            <p><b>Sexo:</b> ${p.sexo}</p>
+                            <p><b>Contacto:</b> ${p.contacto}</p>
+                            <p><b>Diagnóstico:</b> ${p.diagnostico}</p>
+                            <p><b>Forma:</b> ${p.caracterizacao}</p>
+                            <p><b>Início:</b> ${new Date(p.dataInicio).toLocaleDateString()}</p>
+                        </div>
+                        <div class="bg-blue-600 p-3 rounded-xl text-white shadow-inner">
+                            <p class="font-black uppercase text-[8px] mb-1 opacity-80 italic text-center">Agenda de Controlos</p>
+                            <p class="text-center font-bold text-xs">${calcularControlos(p.dataInicio, p.tipo)}</p>
+                        </div>
+                        <button onclick="remover(${p.id})" class="w-full py-2 text-red-400 font-bold uppercase text-[9px] tracking-widest">Excluir Paciente</button>
                     </div>
                 </div>
-                `;
-            }).join('');
+            `).reverse().join('');
         }
 
-        renderizarPacientes();
+        function remover(id) {
+            if(confirm("Tem certeza que deseja apagar este registro permanentemente?")) {
+                pacientes = pacientes.filter(p => p.id !== id);
+                localStorage.setItem('pacientes', JSON.stringify(pacientes));
+                renderizar();
+            }
+        }
+
+        renderizar();
     </script>
 </body>
 </html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>TB-CONTROL</title>
+    
+    <link rel="manifest" href="manifest.json">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f8fafc; }
+        .card { background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body>
+
+    <header class="p-6 bg-white border-b">
+        <div class="flex items-center gap-2">
+            <div class="bg-blue-600 p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl tracking-tight">TB-CONTROL</h1>
+                <p class="text-xs text-gray-500 font-semibold uppercase tracking-widest">Gestão Clínica Especializada</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 space-y-4">
+        <button class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-95 transition-transform">
+            + ADICIONAR PACIENTE
+        </button>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="card flex items-center gap-3">
+                <div class="bg-slate-800 p-3 rounded-xl text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-400">ATIVOS</p>
+                    <p class="text-2xl font-bold text-slate-800">0</p>
+                </div>
+            </div>
+
+            <div class="card flex items-center gap-3">
+                <div class="bg-orange-500 p-3 rounded-xl text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-400">PRÓXIMOS</p>
+                    <p class="text-2xl font-bold text-slate-800">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card flex items-center gap-3">
+            <div class="bg-rose-500 p-3 rounded-xl text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 font-semibold uppercase">Atrasados</p>
+                <p class="text-2xl font-bold text-slate-800">0</p>
+            </div>
+        </div>
+
+        <div class="py-10 flex flex-col items-center justify-center text-center opacity-40">
+            <div class="bg-gray-200 p-8 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <p class="font-bold text-lg">SEM REGISTROS</p>
+            <p class="text-sm">Toque no botão azul acima para começar.</p>
+        </div>
+    </main>
+
+    <footer class="text-center p-8 text-[10px] text-gray-400 font-mono">
+        TB-CONTROL • V2.5 MOBILE READY
+    </footer>
+
+</body>
+</html>

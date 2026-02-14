@@ -1,306 +1,251 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#00463f">
-    <title>TB-CONTROL | EHR FULL SYSTEM</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>TB-CONTROL ULTRA</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Open Sans', sans-serif; background-color: #f0f2f5; font-size: 18px; }
-        .omrs-header { background-color: #00463f; border-bottom: 6px solid #f26522; }
-        .omrs-card { border-radius: 12px; transition: all 0.2s ease-in-out; }
-        .alert-urgent { background-color: #fff1f2; border: 3px solid #be123c; color: #9f1239; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.85; } 100% { opacity: 1; } }
-        input, select, button { min-height: 55px; font-size: 1.2rem !important; font-weight: 600 !important; }
-        .detail-label { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-        .detail-value { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
+        :root {
+            --primary: #004d40;
+            --accent: #ff6b00;
+            --bg: #f4f7f6;
+            --danger: #e74c3c;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
+        
+        header { 
+            background: var(--primary); color: white; padding: 15px; 
+            text-align: center; border-bottom: 5px solid var(--accent);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .header-btns { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        
+        .btn-top { 
+            background: rgba(255,255,255,0.2); border: 1px solid white; 
+            color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;
+        }
+
+        .dashboard {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; padding: 15px;
+        }
+
+        .card {
+            background: white; padding: 15px; border-radius: 12px;
+            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-bottom: 5px solid #ccc;
+        }
+
+        .sensivel { border-bottom-color: #2ecc71; }
+        .resistente { border-bottom-color: var(--danger); }
+        .hiv-card { border-bottom-color: #9b59b6; }
+
+        .search-container { padding: 0 15px; }
+        .search-bar { 
+            width: 100%; padding: 12px; border-radius: 25px; 
+            border: 1px solid #ddd; box-sizing: border-box; 
+        }
+
+        .form-container { 
+            background: white; margin: 15px; padding: 20px; 
+            border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
+        
+        input, select {
+            width: 100%; padding: 12px; margin: 5px 0 15px 0;
+            border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+        }
+
+        .btn-save {
+            width: 100%; padding: 15px; background: var(--accent);
+            color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px;
+        }
+
+        .lista-pacientes { padding: 15px; }
+        .paciente-item { 
+            background: white; margin-bottom: 12px; padding: 15px; 
+            border-left: 8px solid var(--primary); border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .btn-delete {
+            position: absolute; top: 10px; right: 10px;
+            background: #ffebee; color: var(--danger);
+            border: none; border-radius: 50%; width: 30px; height: 30px;
+            font-weight: bold; cursor: pointer;
+        }
+
+        .tag { 
+            display: inline-block; padding: 2px 8px; border-radius: 4px; 
+            font-size: 11px; font-weight: bold; color: white; margin-top: 5px;
+        }
     </style>
 </head>
-<body class="pb-24">
+<body>
 
-    <header class="omrs-header p-6 text-white sticky top-0 z-20 shadow-xl">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-5">
-                <div class="bg-white p-3 rounded-xl shadow-lg text-[#00463f]">
-                    <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-4v-4H5v-4h5V5h4v5h5v4h-5v4z"/></svg>
-                </div>
-                <div>
-                    <h1 class="font-black text-3xl tracking-tighter uppercase italic">TB-CONTROL <span class="text-orange-400">ULTRA</span></h1>
-                    <p class="text-sm opacity-90 font-bold tracking-widest">SISTEMA DE GESTÃO CLÍNICA DE TUBERCULOSE</p>
-                </div>
-            </div>
-            <div class="flex gap-4">
-                <button onclick="exportarDadosJS()" class="px-6 bg-white/10 hover:bg-white/20 border-2 border-white/40 rounded-xl flex items-center gap-3 text-sm font-black transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span class="hidden md:inline">EXPORTAR BACKUP</span>
-                </button>
-                <button onclick="document.getElementById('fileInputJS').click()" class="px-6 bg-[#f26522] hover:bg-[#d4561b] rounded-xl flex items-center gap-3 text-sm font-black shadow-lg transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    <span class="hidden md:inline">IMPORTAR DADOS</span>
-                </button>
-                <input type="file" id="fileInputJS" class="hidden" accept=".json" onchange="importarDadosJS(event)">
-            </div>
-        </div>
-    </header>
-
-    <div class="bg-white border-b border-gray-300 p-8 shadow-inner">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div class="bg-slate-50 p-4 rounded-2xl border-b-8 border-slate-300">
-                <span class="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Total na Unidade</span>
-                <span id="dashTotal" class="text-5xl font-black text-slate-800 italic">0</span>
-            </div>
-            <div class="bg-emerald-50 p-4 rounded-2xl border-b-8 border-emerald-500">
-                <span class="block text-sm font-black text-emerald-500 uppercase tracking-widest mb-2">TB Sensível</span>
-                <span id="dashSensivel" class="text-5xl font-black text-emerald-700 italic">0</span>
-            </div>
-            <div class="bg-rose-50 p-4 rounded-2xl border-b-8 border-rose-500">
-                <span class="block text-sm font-black text-rose-500 uppercase tracking-widest mb-2">TB Resistente</span>
-                <span id="dashResistente" class="text-5xl font-black text-rose-700 italic">0</span>
-            </div>
-        </div>
+<header>
+    <strong>TB-CONTROL ULTRA</strong>
+    <div class="header-btns">
+        <button class="btn-top" onclick="exportarDados()">⬆ Exportar</button>
+        <button class="btn-top" onclick="importarDados()">⬇ Importar</button>
     </div>
+</header>
 
-    <main class="max-w-7xl mx-auto p-6">
-        <div class="bg-white p-8 rounded-2xl border-2 border-gray-200 shadow-xl mb-12">
-            <div class="relative">
-                <input type="text" id="inputBusca" onkeyup="renderizar()" placeholder="PESQUISAR PACIENTE POR NOME OU NID..." 
-                    class="w-full bg-gray-50 border-4 border-gray-200 p-6 pl-16 rounded-2xl focus:border-[#00463f] outline-none text-2xl font-black uppercase placeholder:text-gray-300 transition-all">
-                <svg class="w-10 h-10 absolute left-4 top-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="4"></path></svg>
-            </div>
-        </div>
+<div class="dashboard">
+    <div class="card"><h3>TOTAL</h3><p id="dash-total">0</p></div>
+    <div class="card sensivel"><h3>SENSÍVEL</h3><p id="dash-sens">0</p></div>
+    <div class="card resistente"><h3>RESIST.</h3><p id="dash-res">0</p></div>
+    <div class="card hiv-card"><h3>HIV+</h3><p id="dash-hiv">0</p></div>
+</div>
 
-        <div id="listaPacientes" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
-    </main>
+<div class="search-container">
+    <input type="text" id="busca" class="search-bar" placeholder="🔍 Pesquisar por Nome ou NID..." onkeyup="renderizar()">
+</div>
 
-    <button onclick="abrirModal()" class="fixed bottom-12 right-12 bg-[#f26522] text-white w-24 h-24 rounded-3xl shadow-2xl z-30 flex items-center justify-center border-4 border-white active:scale-90 transition-all">
-        <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="4" d="M12 4v16m8-8H4"/></svg>
-    </button>
+<div class="form-container">
+    <h3>Novo Registro Clínico</h3>
+    
+    <label>NID:</label>
+    <input type="number" id="nid" placeholder="Número de Identificação">
 
-    <div id="modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-lg flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-5xl border-t-[15px] border-[#00463f] shadow-2xl rounded-3xl overflow-hidden animate-in zoom-in duration-300">
-            <div class="bg-slate-50 p-6 border-b flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <div class="w-3 h-10 bg-[#f26522] rounded-full"></div>
-                    <h2 class="font-black text-[#00463f] uppercase text-2xl tracking-tighter">Admitir Novo Paciente no Programa TB</h2>
-                </div>
-                <button onclick="fecharModal()" class="text-slate-400 hover:text-rose-600 font-black text-4xl">×</button>
-            </div>
-            
-            <div class="p-10 space-y-8 max-h-[80vh] overflow-y-auto">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="md:col-span-1">
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Identificador (NID)</label>
-                        <input type="text" id="nid" class="w-full border-2 border-slate-200 p-4 rounded-xl font-black uppercase text-blue-700 focus:border-blue-500 outline-none shadow-sm">
-                    </div>
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Nome Completo do Paciente</label>
-                        <input type="text" id="nome" class="w-full border-2 border-slate-200 p-4 rounded-xl font-black uppercase text-slate-800 focus:border-blue-500 outline-none shadow-sm">
-                    </div>
-                </div>
+    <label>Nome Completo:</label>
+    <input type="text" id="nome" placeholder="Nome do Paciente">
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Idade (Anos)</label>
-                        <input type="number" id="idade" class="w-full border-2 border-slate-200 p-4 rounded-xl font-bold outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Sexo Biológico</label>
-                        <select id="sexo" class="w-full border-2 border-slate-200 p-4 rounded-xl font-bold outline-none">
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Telemóvel / Contacto de Emergência</label>
-                        <input type="tel" id="contacto" class="w-full border-2 border-slate-200 p-4 rounded-xl font-bold outline-none" placeholder="+258 ...">
-                    </div>
-                </div>
+    <label>Tipo de TB:</label>
+    <select id="tipo_tb">
+        <option value="Sensível">TB Sensível (Regime 2HRZE/4HR)</option>
+        <option value="Resistente">TB Resistente (Regime BPaL)</option>
+    </select>
 
-                <div class="bg-slate-50 p-8 rounded-3xl border-2 border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <label class="block text-xs font-black text-[#00463f] uppercase mb-3 italic">Forma da Doença (Caracterização)</label>
-                        <select id="caracterizacao" class="w-full border-2 border-white p-4 rounded-xl font-black shadow-md">
-                            <option value="Pulmonar">PULMONAR</option>
-                            <option value="Extra-Pulmonar">EXTRA-PULMONAR</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-[#00463f] uppercase mb-3 italic">Tipo de Diagnóstico</label>
-                        <select id="diagnostico" class="w-full border-2 border-white p-4 rounded-xl font-black shadow-md">
-                            <option value="Bacteriológico">BACTERIOLÓGICO (Positivo)</option>
-                            <option value="Clínico">CLÍNICO (Raio-X/Sintomático)</option>
-                        </select>
-                    </div>
-                </div>
+    <label>Data de Início do Tratamento:</label>
+    <input type="date" id="data_inicio">
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                    <div class="bg-blue-600 p-4 rounded-2xl text-white">
-                        <label class="block text-[10px] font-black uppercase mb-2">Classificação de Resistência</label>
-                        <select id="tipo" onchange="atualizarRegimes()" class="w-full bg-blue-700 border-none p-3 rounded-xl font-black outline-none text-white">
-                            <option value="Sensível">TB SENSÍVEL (RS)</option>
-                            <option value="Resistente">TB RESISTENTE (RR/MDR)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Regime Terapêutico Proposto</label>
-                        <select id="regime" class="w-full border-2 border-slate-200 p-4 rounded-xl font-black text-blue-800 outline-none"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 italic">Data de Início do Tratamento</label>
-                        <input type="date" id="dataInicio" class="w-full border-2 border-slate-200 p-4 rounded-xl font-black outline-none text-orange-600">
-                    </div>
-                </div>
-            </div>
+    <label>Status HIV:</label>
+    <select id="status_hiv">
+        <option value="Negativo">Negativo (-)</option>
+        <option value="Positivo">Positivo (+)</option>
+        <option value="Não Testado">Não Testado</option>
+    </select>
+    
+    <button class="btn-save" onclick="salvarPaciente()">SALVAR NO SISTEMA</button>
+</div>
 
-            <div class="p-8 bg-slate-50 border-t flex gap-4">
-                <button onclick="fecharModal()" class="flex-1 bg-white border-2 border-slate-200 text-slate-400 p-6 rounded-2xl font-black uppercase hover:bg-slate-100 transition-all">Cancelar</button>
-                <button onclick="salvarPaciente()" class="flex-[2] bg-[#00463f] text-white p-6 rounded-2xl font-black uppercase text-xl shadow-2xl hover:bg-[#002d29] transition-all">Registar Paciente e Abrir Ficha</button>
-            </div>
-        </div>
-    </div>
+<div id="lista" class="lista-pacientes"></div>
 
-    <script>
-        let pacientes = JSON.parse(localStorage.getItem('tb_pacientes')) || [];
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+<script>
+    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_data')) || [];
 
-        function som(f, t, d) {
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
-            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            o.connect(g); g.connect(audioCtx.destination);
-            o.start(); o.stop(audioCtx.currentTime + d);
+    function salvarPaciente() {
+        const p = {
+            nid: document.getElementById('nid').value,
+            nome: document.getElementById('nome').value,
+            tipo: document.getElementById('tipo_tb').value,
+            inicio: document.getElementById('data_inicio').value,
+            hiv: document.getElementById('status_hiv').value,
+            id: Date.now()
+        };
+
+        if(!p.nome || !p.inicio) return alert("Por favor, preencha o Nome e a Data de Início.");
+
+        pacientes.push(p);
+        atualizarStorage();
+        alert("Paciente cadastrado com sucesso!");
+        limparForm();
+    }
+
+    function eliminarPaciente(id) {
+        if(confirm("Tem certeza que deseja eliminar este registo? Esta ação não pode ser desfeita.")) {
+            pacientes = pacientes.filter(p => p.id !== id);
+            atualizarStorage();
         }
+    }
 
-        function abrirModal() { document.getElementById('modal').classList.remove('hidden'); atualizarRegimes(); }
-        function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
+    function atualizarStorage() {
+        localStorage.setItem('tb_ultra_data', JSON.stringify(pacientes));
+        renderizar();
+    }
 
-        function atualizarRegimes() {
-            const tipo = document.getElementById('tipo').value;
-            const rs = document.getElementById('regime');
-            rs.innerHTML = tipo === "Sensível" ? 
-                '<option value="2HRZE/4HR">2HRZE/4HR</option><option value="2HRZ+E/4HR">2HRZ+E/4HR</option>' : 
-                '<option value="BPaL">BPaL (Resistente)</option><option value="BPaLM">BPaLM</option>';
-        }
+    function limparForm() {
+        document.getElementById('nid').value = "";
+        document.getElementById('nome').value = "";
+        document.getElementById('data_inicio').value = "";
+    }
 
-        function salvarPaciente() {
-            const campos = ['nid', 'nome', 'idade', 'sexo', 'contacto', 'caracterizacao', 'diagnostico', 'tipo', 'regime', 'dataInicio'];
-            const p = { id: Date.now() };
-            campos.forEach(c => p[c] = document.getElementById(c).value);
+    function calcularBK(dataInicio, dias) {
+        let data = new Date(dataInicio);
+        data.setDate(data.getDate() + dias);
+        return data.toLocaleDateString('pt-BR');
+    }
 
-            if (!p.nome || !p.dataInicio || !p.nid) return alert("Erro crítico: NID, Nome e Data são obrigatórios para admissão!");
+    function renderizar() {
+        const lista = document.getElementById('lista');
+        const busca = document.getElementById('busca').value.toLowerCase();
+        lista.innerHTML = "";
 
-            pacientes.push(p);
-            localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-            som(880, 'sine', 0.1); fecharModal(); renderizar();
-        }
+        let cSens = 0, cRes = 0, cHiv = 0;
 
-        function remover(id) {
-            if(confirm("ATENÇÃO: Deseja ELIMINAR permanentemente este paciente e todo o seu histórico de seguimento?")) {
-                pacientes = pacientes.filter(p => p.id !== id);
-                localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-                renderizar();
+        pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.includes(busca)).forEach(p => {
+            if(p.tipo === "Sensível") cSens++;
+            if(p.tipo === "Resistente") cRes++;
+            if(p.hiv === "Positivo") cHiv++;
+
+            const dataBK1 = calcularBK(p.inicio, 53);
+            const dataBK2 = calcularBK(p.inicio, 145);
+
+            lista.innerHTML += `
+                <div class="paciente-item">
+                    <button class="btn-delete" onclick="eliminarPaciente(${p.id})">X</button>
+                    <strong>NID: ${p.nid} - ${p.nome}</strong><br>
+                    <span class="tag" style="background:#2ecc71">${p.tipo}</span>
+                    <span class="tag" style="background:${p.hiv==='Positivo'?'#9b59b6':'#95a5a6'}">HIV: ${p.hiv}</span>
+                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                    <small>📅 Início: ${p.inicio.split('-').reverse().join('/')}</small><br>
+                    <small>🔬 1º Controle BK: <b>${dataBK1}</b></small><br>
+                    <small>🔬 2º Controle BK: <b>${dataBK2}</b></small>
+                </div>
+            `;
+        });
+
+        document.getElementById('dash-total').innerText = pacientes.length;
+        document.getElementById('dash-sens').innerText = cSens;
+        document.getElementById('dash-res').innerText = cRes;
+        document.getElementById('dash-hiv').innerText = cHiv;
+    }
+
+    function exportarDados() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pacientes));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "backup_tb_control.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    function importarDados() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsText(file,'UTF-8');
+            reader.onload = readerEvent => {
+                const content = readerEvent.target.result;
+                pacientes = JSON.parse(content);
+                atualizarStorage();
+                alert("Dados importados com sucesso!");
             }
         }
+        input.click();
+    }
 
-        function renderizar() {
-            const lista = document.getElementById('listaPacientes');
-            const busca = document.getElementById('inputBusca').value.toLowerCase();
-            const filtrados = pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca));
+    renderizar();
+</script>
 
-            document.getElementById('dashTotal').innerText = pacientes.length;
-            document.getElementById('dashSensivel').innerText = pacientes.filter(p => p.tipo === "Sensível").length;
-            document.getElementById('dashResistente').innerText = pacientes.filter(p => p.tipo === "Resistente").length;
-
-            let temUrgente = false;
-
-            lista.innerHTML = filtrados.reverse().map(p => {
-                const inicio = new Date(p.dataInicio);
-                const hoje = new Date();
-                const decorridos = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
-                let termino = new Date(inicio); termino.setMonth(inicio.getMonth() + 6);
-                
-                let infoControlo = ""; let eUrgente = false;
-
-                if (p.tipo === "Sensível") {
-                    const c1 = 53, c2 = 145;
-                    let alvo = decorridos <= c1 ? c1 : c2;
-                    let dataAlvo = new Date(inicio); dataAlvo.setDate(inicio.getDate() + alvo);
-                    let faltam = Math.floor((dataAlvo - hoje) / (1000 * 60 * 60 * 24));
-                    infoControlo = `Próximo Exame (${alvo === 53 ? 'Fase Int.' : 'Fase Man.'}): em ${faltam} dias`;
-                    if (faltam <= 7) eUrgente = true;
-                } else {
-                    infoControlo = "ALERTA: Paciente RR - Seguimento Mensal Estrito";
-                    eUrgente = true;
-                }
-
-                if (eUrgente) temUrgente = true;
-
-                return `
-                <div class="bg-white border-l-[12px] ${p.tipo === 'Resistente' ? 'border-rose-600 shadow-rose-100' : 'border-emerald-600 shadow-emerald-100'} shadow-2xl omrs-card overflow-hidden">
-                    <div onclick="document.getElementById('detalhe-${p.id}').classList.toggle('hidden')" class="p-8 cursor-pointer hover:bg-slate-50 transition-all">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">NID: ${p.nid}</span>
-                                <h3 class="font-black text-2xl text-slate-900 uppercase leading-none mt-1 italic">${p.nome}</h3>
-                            </div>
-                            <div class="flex flex-col gap-2 items-end">
-                                <span class="bg-slate-800 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">${p.regime}</span>
-                                <span class="bg-blue-100 text-blue-700 text-[10px] font-black px-3 py-1 rounded-full uppercase italic">${p.caracterizacao}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="p-6 rounded-2xl ${eUrgente ? 'alert-urgent' : 'bg-slate-100 text-slate-600'} mb-6 border-2 border-transparent">
-                            <p class="text-xs font-black uppercase mb-1 opacity-70">Monitoria de Tratamento:</p>
-                            <p class="text-xl font-black italic">${infoControlo}</p>
-                        </div>
-                        
-                        <div class="flex justify-between text-xs font-black text-slate-400 uppercase border-t pt-4">
-                            <span>Admissão: ${new Date(p.dataInicio).toLocaleDateString()}</span>
-                            <span>Previsão Alta: ${termino.toLocaleDateString()}</span>
-                        </div>
-                    </div>
-
-                    <div id="detalhe-${p.id}" class="hidden p-8 bg-slate-50 border-t-4 border-slate-200 animate-in slide-in-from-top duration-300">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-8 mb-10">
-                            <div><p class="detail-label">Dados Pessoais</p><p class="detail-value">${p.idade} Anos / ${p.sexo}</p></div>
-                            <div><p class="detail-label">Contacto Direto</p><p class="detail-value text-blue-600">${p.contacto || 'SEM CONTACTO'}</p></div>
-                            <div><p class="detail-label">Método Diagnóstico</p><p class="detail-value">${p.diagnostico}</p></div>
-                            <div><p class="detail-label">Localização TB</p><p class="detail-value">${p.caracterizacao}</p></div>
-                            <div><p class="detail-label">Tipo de Resistência</p><p class="detail-value ${p.tipo === 'Resistente' ? 'text-rose-600' : 'text-emerald-600'} uppercase">${p.tipo}</p></div>
-                            <div><p class="detail-label">Gestão de Casos</p><p class="detail-value">Ativo no Programa</p></div>
-                        </div>
-                        
-                        <div class="flex gap-4">
-                            <button onclick="remover(${p.id})" class="flex-1 text-rose-600 text-sm font-black py-4 border-4 border-rose-100 rounded-2xl hover:bg-rose-600 hover:text-white uppercase transition-all">Encerrar Processo / Eliminar</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-
-            if (temUrgente) som(440, 'triangle', 0.2);
-        }
-
-        function exportarDadosJS() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pacientes));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", `BACKUP_TB_ULTRA_${new Date().toISOString().slice(0,10)}.json`);
-            downloadAnchorNode.click();
-        }
-
-        function importarDadosJS(event) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                pacientes = JSON.parse(e.target.result);
-                localStorage.setItem('tb_pacientes', JSON.stringify(pacientes));
-                renderizar(); som(880, 'sine', 0.1);
-            };
-            reader.readAsText(event.target.files[0]);
-        }
-
-        renderizar();
-    </script>
 </body>
 </html>

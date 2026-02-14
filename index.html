@@ -3,122 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL FULL EXCEL</title>
+    <title>TB-CONTROL TOTAL PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary-dark: #0A2E26;
             --bg-comfort: #F0F4F3;
             --accent-green: #0A6A5E;
-            --excel-color: #236e37;
             --text-main: #2D3748;
-            --danger: #C53030;
-            --success: #2F855A;
             --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { margin: 0; background: var(--bg-comfort); color: var(--text-main); padding-bottom: 100px; }
-
+        body { margin: 0; background: var(--bg-comfort); padding-bottom: 100px; }
+        
         header { 
             background: var(--primary-dark); padding: 15px 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky; top: 0; z-index: 1000; color: white;
         }
-        .app-title { color: white; font-weight: 800; font-size: 20px; }
-        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; display: flex; align-items: center; }
+        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 50%; display: flex; align-items: center; }
         .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 14px; }
 
-        .utility-bar { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-util { flex: 1; padding: 12px; border-radius: 10px; border: none; background: white; font-size: 11px; font-weight: 700; color: var(--primary-dark); box-shadow: var(--shadow); cursor: pointer; min-width: 110px; }
+        .utility-bar { padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto; }
+        .btn-util { padding: 10px 14px; border-radius: 10px; border: none; background: white; font-size: 11px; font-weight: 700; color: var(--primary-dark); box-shadow: var(--shadow); white-space: nowrap; }
 
         .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 20px; }
         .db-card { background: white; border-radius: 14px; padding: 16px; border-bottom: 5px solid #E2E8F0; box-shadow: var(--shadow); }
         .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; font-weight: 900; }
-        .db-val { font-size: 28px; font-weight: 900; color: var(--primary-dark); margin-top: 4px; }
+        .db-val { font-size: 28px; font-weight: 900; }
 
         .lista { padding: 10px 20px; }
         .p-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); border-left: 5px solid var(--accent-green); position: relative; }
-        .p-card.alerta-bk { border-left-color: var(--danger); background: #FFF5F5; }
-        .p-name { font-size: 19px; font-weight: 800; margin: 8px 0; }
-        .tag { font-size: 10px; padding: 5px 10px; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 5px; }
+        .p-name { font-size: 18px; font-weight: 800; color: #1A202C; margin-bottom: 5px; }
+        .tag { font-size: 9px; padding: 4px 8px; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 4px; }
 
         .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
-        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; max-height: 88vh; border-radius: 28px; overflow-y: auto; }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; max-height: 85vh; border-radius: 28px; overflow-y: auto; }
         label { font-size: 11px; font-weight: 900; color: #718096; display: block; margin-top: 12px; text-transform: uppercase; }
         input, select { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
         .btn-save { width: 100%; padding: 18px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
-
-        .btn-fab { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: none; z-index: 2000; font-size: 40px; color: var(--accent-green); }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="app-title">TB-CONTROL</div>
+    <div style="font-weight:900">TB-CONTROL</div>
     <div class="search-box"><input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizar()"></div>
 </header>
 
 <div class="utility-bar">
-    <button class="btn-util" onclick="exportarExcel()" style="background:var(--excel-color); color:white">📊 Exportar Excel</button>
-    <button class="btn-util" onclick="document.getElementById('fileExcel').click()" style="background:var(--accent-green); color:white">📥 Importar Excel</button>
+    <button class="btn-util" onclick="exportarExcel()" style="background:#236e37; color:white">📊 Excel Export</button>
+    <button class="btn-util" onclick="document.getElementById('fileExcel').click()" style="background:#0A6A5E; color:white">📥 Excel Import</button>
     <input type="file" id="fileExcel" hidden accept=".xlsx, .xls" onchange="importarExcel(event)">
 </div>
 
 <div class="db-grid">
     <div class="db-card" style="border-color:var(--accent-green)"><h3>Ativos</h3><div class="db-val" id="count-at">0</div></div>
     <div class="db-card" style="border-color:#3182CE"><h3>Curados</h3><div class="db-val" id="count-cu">0</div></div>
-    <div class="db-card" style="border-color:#E53E3E"><h3>Abandono</h3><div class="db-val" id="count-ab">0</div></div>
-    <div class="db-card" style="border-color:#DD6B20"><h3>HIV+</h3><div class="db-val" id="count-hi">0</div></div>
 </div>
 
 <div id="lista" class="lista"></div>
 
-<button class="btn-fab" onclick="document.getElementById('modalRegisto').style.display='block'">+</button>
+<button onclick="abrirModal()" style="position:fixed; bottom:30px; right:25px; width:65px; height:65px; background:white; border-radius:50%; font-size:40px; color:var(--accent-green); border:none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index:2000">+</button>
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2 style="margin:0">Nova Admissão</h2>
-        <label>NID</label><input type="text" id="nid">
-        <label>Nome Completo</label><input type="text" id="nome">
-        <label>Data de Início</label><input type="date" id="data_inicio">
-        <label>Tipo TB</label>
-        <select id="tipo_tb">
-            <option value="Sensível">Sensível</option>
-            <option value="Resistente">Resistente</option>
+        <h2 style="font-weight:900">Nova Admissão</h2>
+        
+        <label>Identificação</label>
+        <input type="text" id="nid" placeholder="NID">
+        <input type="text" id="nome" placeholder="Nome Completo">
+        
+        <div class="flex gap-2">
+            <div class="flex-1"><label>Idade</label><input type="number" id="idade"></div>
+            <div class="flex-1"><label>Sexo</label><select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select></div>
+        </div>
+
+        <label>Tipo de TB</label>
+        <select id="tipo_tb" onchange="atualizarRegimes()">
+            <option value="Sensível">TB Sensível</option>
+            <option value="Resistente">TB Resistente (DR/MR)</option>
         </select>
-        <label>HIV</label>
-        <select id="hiv">
+        
+        <label>Regime de Tratamento</label>
+        <select id="regime"></select>
+
+        <label>HIV & TARV</label>
+        <select id="hiv" onchange="document.getElementById('campo_tarv').style.display=(this.value=='Positivo'?'block':'none')">
             <option value="Negativo">Negativo</option>
             <option value="Positivo">Positivo</option>
         </select>
+        <div id="campo_tarv" style="display:none">
+            <select id="tarv"><option value="Sim">Em TARV</option><option value="Não">Não</option></select>
+        </div>
+
+        <label>Início do Tratamento</label>
+        <input type="date" id="data_inicio">
+
         <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR</button>
-        <button onclick="this.parentElement.parentElement.style.display='none'" style="width:100%; border:none; background:none; margin-top:10px; color:gray">Fechar</button>
+        <button onclick="fecharModal()" style="width:100%; border:none; background:none; margin-top:10px; color:gray">Cancelar</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('tb_final_v10')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_final_full_v1')) || [];
+
+    function abrirModal() { document.getElementById('modalRegisto').style.display='block'; atualizarRegimes(); }
+    function fecharModal() { document.getElementById('modalRegisto').style.display='none'; }
+
+    function atualizarRegimes() {
+        const tipo = document.getElementById('tipo_tb').value;
+        const reg = document.getElementById('regime');
+        reg.innerHTML = "";
+        if(tipo === "Sensível") {
+            ["2HRZE/4HR", "2HRZ+E/4HR", "4HRZE/2HR", "3HRZ+E/2HR"].forEach(o => reg.innerHTML += `<option value="${o}">${o}</option>`);
+        } else {
+            ["BPaL", "Regime Longo"].forEach(o => reg.innerHTML += `<option value="${o}">${o}</option>`);
+        }
+    }
 
     function salvarPaciente() {
         const p = {
             id: Date.now(),
             nid: document.getElementById('nid').value,
             nome: document.getElementById('nome').value,
+            idade: document.getElementById('idade').value,
+            sexo: document.getElementById('sexo').value,
             tipo: document.getElementById('tipo_tb').value,
+            regime: document.getElementById('regime').value,
             hiv: document.getElementById('hiv').value,
+            tarv: document.getElementById('tarv').value,
             inicio: document.getElementById('data_inicio').value,
-            estado: 'Ativo', bk2: false, bk5: false
+            estado: 'Ativo'
         };
-        if(!p.nome || !p.inicio) return alert("Nome e Data obrigatórios!");
+        if(!p.nome || !p.inicio) return alert("Preencha o Nome e Data!");
         db.push(p);
         atualizarDB();
-        document.getElementById('modalRegisto').style.display='none';
+        fecharModal();
     }
 
     function atualizarDB() {
-        localStorage.setItem('tb_final_v10', JSON.stringify(db));
+        localStorage.setItem('tb_final_full_v1', JSON.stringify(db));
         renderizar();
     }
 
@@ -127,41 +153,51 @@
         const busca = document.getElementById('busca').value.toLowerCase();
         const hoje = new Date();
         lista.innerHTML = '';
-        let at=0, cu=0, ab=0, hi=0;
+        let at=0, cu=0;
 
-        db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.includes(busca)).forEach(p => {
-            if(p.estado==='Ativo') at++; else if(p.estado==='Curado') cu++; else ab++;
-            if(p.hiv==='Positivo') hi++;
+        db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.includes(busca)).reverse().forEach(p => {
+            if(p.estado==='Ativo') at++; else if(p.estado==='Curado') cu++;
 
             // Cálculo BK (53 e 145 dias)
             const d2 = new Date(p.inicio); d2.setDate(d2.getDate() + 53);
             const d5 = new Date(p.inicio); d5.setDate(d5.getDate() + 145);
-            const alerta = (p.estado==='Ativo') && ((hoje > d2 && !p.bk2) || (hoje > d5 && !p.bk5));
+            const alerta = (hoje > d2 && p.estado === 'Ativo');
 
             lista.innerHTML += `
-                <div class="p-card ${alerta ? 'alerta-bk' : ''}">
-                    <div style="font-size:10px; font-weight:900; color:#718096">NID: ${p.nid} | ${p.estado}</div>
-                    <div class="p-name">${p.nome}</div>
-                    <span class="tag" style="background:var(--primary-dark)">${p.tipo}</span>
-                    <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV ${p.hiv}</span>
-                    <div style="margin-top:10px; font-size:11px; font-weight:bold">
-                        <span style="color:${hoje > d2 && !p.bk2 ? 'red' : 'gray'}">BK2: ${d2.toLocaleDateString()}</span> | 
-                        <span style="color:${hoje > d5 && !p.bk5 ? 'red' : 'gray'}">BK5: ${d5.toLocaleDateString()}</span>
+                <div class="p-card ${alerta ? 'border-red-500 bg-red-50' : ''}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[9px] font-bold text-gray-400 tracking-wider">NID: ${p.nid}</p>
+                            <h3 class="p-name uppercase">${p.nome}</h3>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="tag bg-slate-800">${p.regime}</span>
+                                <span class="tag ${p.hiv==='Positivo'?'bg-orange-600':'bg-gray-500'}">HIV: ${p.hiv}</span>
+                                <span class="tag bg-emerald-700">Início: ${p.inicio}</span>
+                            </div>
+                        </div>
                     </div>
+                    <div class="mt-3 p-3 bg-white/50 rounded-xl border border-dashed border-gray-300">
+                        <p class="text-[9px] font-black text-gray-500 uppercase">Seguimento BK</p>
+                        <div class="flex justify-between text-[10px] font-bold">
+                            <span class="${hoje > d2 ? 'text-red-600' : 'text-gray-400'}">2º Mês: ${d2.toLocaleDateString()}</span>
+                            <span class="${hoje > d5 ? 'text-red-600' : 'text-gray-400'}">5º Mês: ${d5.toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <button onclick="remover(${p.id})" class="mt-2 text-[9px] text-red-300 font-bold uppercase">Remover</button>
                 </div>`;
         });
-        document.getElementById('count-at').innerText=at; 
-        document.getElementById('count-cu').innerText=cu;
-        document.getElementById('count-ab').innerText=ab; 
-        document.getElementById('count-hi').innerText=hi;
+        document.getElementById('count-at').innerText = at;
+        document.getElementById('count-cu').innerText = cu;
     }
 
-    // EXCEL
+    function remover(id) { if(confirm("Apagar registo?")) { db = db.filter(x => x.id !== id); atualizarDB(); } }
+
     function exportarExcel() {
+        if(db.length === 0) return alert("Sem dados!");
         const ws = XLSX.utils.json_to_sheet(db);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Pacientes");
-        XLSX.writeFile(wb, "Backup_TBControl.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "TB_Pacientes");
+        XLSX.writeFile(wb, "TB_Control_Backup.xlsx");
     }
 
     function importarExcel(event) {
@@ -171,8 +207,8 @@
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, {type: 'array'});
             const excelData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-            if(confirm(`Importar ${excelData.length} registros?`)) {
-                db = [...db, ...excelData];
+            if(confirm(`Importar ${excelData.length} registos?`)) {
+                db = excelData;
                 atualizarDB();
             }
         };

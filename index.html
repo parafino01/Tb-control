@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL MASTER PDF</title>
+    <title>TB-CONTROL MASTER TOTAL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
@@ -13,248 +13,238 @@
             --bg-comfort: #F0F4F3;
             --accent-green: #0A6A5E;
             --text-main: #2D3748;
-            --text-muted: #718096;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --danger: #C53030;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { margin: 0; background: var(--bg-comfort); color: var(--text-main); }
-
-        header { 
-            background: var(--primary-dark); padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000;
-        }
-        .app-title { color: white; font-weight: 800; font-size: 20px; }
-        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; display: flex; align-items: center; }
-        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg-comfort); color: var(--text-main); padding-bottom: 100px; }
+        
+        header { background: var(--primary-dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; border: none; color: white; outline: none; }
 
         .utility-bar { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-util { padding: 12px; border-radius: 10px; border: none; background: white; font-size: 11px; font-weight: 700; color: var(--primary-dark); box-shadow: var(--shadow); cursor: pointer; flex: 1; min-width: 100px; }
-        .btn-pdf { background: #C53030; color: white; }
+        .btn-util { padding: 10px; border-radius: 8px; border: none; background: white; font-size: 11px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex: 1; color: var(--primary-dark); }
+        
+        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 10px; }
+        .db-card { background: white; border-radius: 12px; padding: 12px; border-bottom: 4px solid #cbd5e0; }
+        .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; }
+        .db-val { font-size: 22px; font-weight: 900; }
 
-        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 20px; }
-        .db-card { background: white; border-radius: 14px; padding: 16px; border-bottom: 5px solid #E2E8F0; box-shadow: var(--shadow); }
-        .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; font-weight: 900; }
-        .db-val { font-size: 28px; font-weight: 900; color: var(--primary-dark); margin-top: 4px; }
-
-        .lista { padding: 10px 20px 120px; }
-        .p-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); border-left: 5px solid var(--accent-green); }
-        .p-name { font-size: 19px; font-weight: 800; margin: 8px 0; }
-        .tag { font-size: 10px; padding: 5px 10px; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 5px; }
-
-        .btn-fab {
-            position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px;
-            background: white; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: none; z-index: 2000;
-        }
-        .btn-fab span { font-size: 40px; color: var(--accent-green); font-weight: 300; }
+        .lista { padding: 0 20px; }
+        .p-card { background: white; padding: 16px; margin-bottom: 12px; border-radius: 15px; border-left: 5px solid var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
+        .p-card.atrasado { border-left-color: var(--danger); background: #FFF5F5; }
+        .p-name { font-size: 18px; font-weight: 800; margin: 4px 0; }
+        .tag { font-size: 9px; padding: 4px 8px; border-radius: 5px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 4px; }
+        
+        .btn-fab { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: white; border-radius: 50%; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); font-size: 35px; color: var(--accent-green); z-index: 2000; display: flex; align-items: center; justify-content: center; }
 
         .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
-        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; max-height: 88vh; border-radius: 28px; overflow-y: auto; }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; border-radius: 25px; max-height: 85vh; overflow-y: auto; }
         input, select, textarea { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
-        .btn-save { width: 100%; padding: 18px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
+        .btn-save { width: 100%; padding: 16px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
+        label { font-size: 11px; font-weight: 800; color: #718096; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="app-title">TB-CONTROL</div>
-    <div class="search-box"><input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizar()"></div>
+    <div style="font-weight: 900; font-size: 20px;">TB-CONTROL</div>
+    <input type="text" id="busca" class="search-box" placeholder="Pesquisar..." onkeyup="renderizar()">
 </header>
 
 <div class="utility-bar">
     <button class="btn-util" onclick="exportarTexto()">📤 Backup</button>
     <button class="btn-util" onclick="abrirImportar()">📥 Restaurar</button>
-    <button class="btn-util btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
+    <button class="btn-util" style="background: #2b6cb0; color: white;" onclick="abrirFiltros()">📄 Relatório BK</button>
 </div>
 
 <div class="db-grid">
-    <div class="db-card"><h3>Ativos</h3><div class="db-val" id="count-at">0</div></div>
-    <div class="db-card"><h3>Curados</h3><div class="db-val" id="count-cu">0</div></div>
-    <div class="db-card"><h3>Abandono</h3><div class="db-val" id="count-ab">0</div></div>
-    <div class="db-card"><h3>HIV+</h3><div class="db-val" id="count-hi">0</div></div>
+    <div class="db-card"><h3>Ativos</h3><div class="db-val" id="at">0</div></div>
+    <div class="db-card"><h3>HIV+</h3><div class="db-val" id="hi">0</div></div>
 </div>
 
 <div id="lista" class="lista"></div>
 
-<button class="btn-fab" onclick="abrirModalRegisto()"><span>+</span></button>
+<button class="btn-fab" onclick="abrirRegisto()"><span>+</span></button>
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2>Admissão Clínica</h2>
-        <input type="text" id="nid" placeholder="NID">
-        <input type="text" id="nome" placeholder="Nome Completo">
-        <input type="text" id="endereco" placeholder="Endereço / Contacto">
+        <h2 style="margin:0">Admissão Clínica</h2>
+        <label>NID</label><input type="text" id="nid">
+        <label>Nome Completo</label><input type="text" id="nome">
         <div style="display:flex; gap:10px">
-            <input type="number" id="idade" placeholder="Idade">
-            <select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select>
+            <div style="flex:1"><label>Idade</label><input type="number" id="idade"></div>
+            <div style="flex:1"><label>Sexo</label><select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select></div>
         </div>
-        <select id="forma"><option value="Pulmonar">TB Pulmonar</option><option value="Extra-Pulmonar">TB Extra-Pulmonar</option></select>
+        <label>Tipo de TB</label>
         <select id="tipo_tb" onchange="atualizarRegimes()">
             <option value="Sensível">TB Sensível</option>
-            <option value="Resistente">TB Resistente (DR/MR)</option>
+            <option value="Resistente">TB Resistente</option>
         </select>
-        <select id="regime"></select>
-        <select id="hiv" onchange="document.getElementById('tarv_area').style.display=(this.value=='Positivo'?'block':'none')">
-            <option value="Negativo">HIV Negativo</option>
-            <option value="Positivo">HIV Positivo</option>
-        </select>
-        <div id="tarv_area" style="display:none"><select id="tarv"><option value="Sim">Em TARV</option><option value="Não">Não</option></select></div>
-        <input type="date" id="data_inicio">
-        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR</button>
-        <button onclick="fecharModalRegisto()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
+        <label>Regime</label><select id="regime"></select>
+        <label>HIV</label>
+        <select id="hiv"><option value="Negativo">Negativo</option><option value="Positivo">Positivo</option></select>
+        <label>Data de Início</label><input type="date" id="data_inicio">
+        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR REGISTO</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
     </div>
 </div>
 
-<div id="modalImport" class="modal">
+<div id="modalFiltros" class="modal">
     <div class="modal-content">
-        <h2>Importar Backup</h2>
-        <textarea id="textoImport" rows="8" placeholder="Cole o código aqui..."></textarea>
-        <button class="btn-save" onclick="confirmarImportacao()">RESTAURAR DADOS</button>
-        <button onclick="document.getElementById('modalImport').style.display='none'" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
+        <h2>Relatório de BK</h2>
+        <label>Filtrar por Data de Início (De):</label><input type="date" id="f_de">
+        <label>Filtrar por Data de Início (Até):</label><input type="date" id="f_ate">
+        <button class="btn-save" style="background:#2b6cb0" onclick="gerarPDF()">GERAR PDF (53/145 DIAS)</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Sair</button>
     </div>
 </div>
 
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h2 id="nomeModal"></h2>
+        <h2 id="st_nome"></h2>
+        <label>Alterar Estado</label>
         <select id="novoEstado">
             <option value="Ativo">Ativo</option>
             <option value="Curado">Curado</option>
             <option value="Abandono">Abandono</option>
             <option value="Óbito">Óbito</option>
         </select>
-        <button class="btn-save" onclick="confirmarStatus()">ATUALIZAR</button>
-        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px">Eliminar Permanente</button>
-        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; margin-top:10px">Sair</button>
+        <button class="btn-save" onclick="confirmarStatus()">ATUALIZAR ESTADO</button>
+        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px; font-weight:800">ELIMINAR REGISTO</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Fechar</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('tb_jstudio_pdf_v1')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_master_total_v5')) || [];
     let idSel = null;
 
-    // Lógica de Regimes
     function atualizarRegimes() {
-        const tipo = document.getElementById('tipo_tb').value;
-        const reg = document.getElementById('regime');
-        reg.innerHTML = "";
-        if(tipo === "Sensível") {
-            ["4HRZE/2HR", "3HRZ+E/2HR"].forEach(o => reg.innerHTML += `<option value="${o}">${o}</option>`);
-        } else {
-            ["BPaL", "Regime Longo"].forEach(o => reg.innerHTML += `<option value="${o}">${o}</option>`);
-        }
+        const t = document.getElementById('tipo_tb').value;
+        const r = document.getElementById('regime');
+        r.innerHTML = "";
+        const ops = t === "Sensível" ? ["4HRZE/2HR", "3HRZ+E/2HR"] : ["BPaL", "Regime Longo"];
+        ops.forEach(o => r.innerHTML += `<option value="${o}">${o}</option>`);
     }
     atualizarRegimes();
 
-    // Funções de Modal
-    function abrirModalRegisto() { document.getElementById('modalRegisto').style.display='block'; }
-    function fecharModalRegisto() { document.getElementById('modalRegisto').style.display='none'; }
-    function fecharModalStatus() { document.getElementById('modalStatus').style.display='none'; }
-    function abrirImportar() { document.getElementById('modalImport').style.display='block'; }
+    function abrirRegisto() { document.getElementById('modalRegisto').style.display='block'; }
+    function abrirFiltros() { document.getElementById('modalFiltros').style.display='block'; }
+    function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
-    // Salvar e Renderizar
     function salvarPaciente() {
         const p = {
             id: Date.now(), nid: document.getElementById('nid').value,
-            nome: document.getElementById('nome').value, forma: document.getElementById('forma').value,
+            nome: document.getElementById('nome').value, idade: document.getElementById('idade').value,
+            sexo: document.getElementById('sexo').value, tipo: document.getElementById('tipo_tb').value,
             regime: document.getElementById('regime').value, hiv: document.getElementById('hiv').value,
-            estado: 'Ativo', data: document.getElementById('data_inicio').value
+            inicio: document.getElementById('data_inicio').value, estado: 'Ativo'
         };
-        if(!p.nid || !p.nome) return alert("NID e Nome obrigatórios");
+        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha NID, Nome e Data!");
         db.push(p);
-        localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
-        fecharModalRegisto(); renderizar();
+        localStorage.setItem('tb_master_total_v5', JSON.stringify(db));
+        fecharModais(); renderizar();
     }
 
-    // PDF GENERATOR
-    function gerarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFontSize(18);
-        doc.text("Relatório de Pacientes TB-CONTROL", 14, 20);
-        doc.setFontSize(10);
-        doc.text(`Data: ${new Date().toLocaleDateString()}`, 14, 28);
+    function calcularData(base, dias) {
+        if(!base) return null;
+        let d = new Date(base);
+        d.setDate(d.getDate() + dias);
+        return d;
+    }
 
-        const rows = [];
-        db.forEach(p => {
-            rows.push([p.nid, p.nome, p.regime, p.hiv, p.estado]);
+    function renderizar() {
+        const lista = document.getElementById('lista');
+        const busca = document.getElementById('busca').value.toLowerCase();
+        const hoje = new Date();
+        lista.innerHTML = '';
+        let at=0, hi=0;
+
+        db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.includes(busca)).forEach(p => {
+            if(p.estado === 'Ativo') at++;
+            if(p.hiv === 'Positivo') hi++;
+
+            const dataBK2 = calcularData(p.inicio, 53);
+            const isAtrasado = p.estado === 'Ativo' && dataBK2 && dataBK2 < hoje;
+
+            lista.innerHTML += `
+                <div class="p-card ${isAtrasado ? 'atrasado' : ''}" onclick="abrirStatus(${p.id})">
+                    <div style="font-size:10px; font-weight:bold; color:#718096">NID: ${p.nid} | ${p.estado}</div>
+                    <div class="p-name">${p.nome}</div>
+                    <span class="tag" style="background:var(--primary-dark)">${p.regime}</span>
+                    <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV ${p.hiv}</span>
+                    <div style="margin-top:8px; font-size:11px; font-weight:bold; color:${isAtrasado ? 'var(--danger)' : 'var(--accent-green)'}">
+                        ${isAtrasado ? '⚠️ BK EM ATRASO: ' : '📅 BK 2ºM: '} ${dataBK2 ? dataBK2.toLocaleDateString('pt-PT') : '-'}
+                    </div>
+                </div>`;
         });
-
-        doc.autoTable({
-            startY: 35,
-            head: [['NID', 'Nome', 'Regime', 'HIV', 'Estado']],
-            body: rows,
-            theme: 'grid',
-            headStyles: { fillColor: [10, 106, 94] }
-        });
-
-        // Tenta salvar, se falhar (comum no JStudio), avisa o usuário
-        try {
-            doc.save("relatorio_tb.pdf");
-        } catch (e) {
-            alert("Ocorreu um erro ao salvar o PDF. Verifique as permissões de armazenamento do aplicativo.");
-        }
-    }
-
-    // Backup Funções
-    function exportarTexto() {
-        const txt = JSON.stringify(db);
-        navigator.clipboard.writeText(txt).then(() => alert("Copiado!")).catch(() => window.prompt("Copie:", txt));
-    }
-
-    function confirmarImportacao() {
-        try {
-            db = JSON.parse(document.getElementById('textoImport').value);
-            localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
-            renderizar();
-            document.getElementById('modalImport').style.display='none';
-        } catch(e) { alert("Código inválido"); }
+        document.getElementById('at').innerText = at;
+        document.getElementById('hi').innerText = hi;
     }
 
     function abrirStatus(id) {
-        idSel = id; const p = db.find(x => x.id === id);
-        document.getElementById('nomeModal').innerText = p.nome;
+        idSel = id;
+        const p = db.find(x => x.id === id);
+        document.getElementById('st_nome').innerText = p.nome;
         document.getElementById('novoEstado').value = p.estado;
         document.getElementById('modalStatus').style.display='block';
     }
 
     function confirmarStatus() {
         db.find(x => x.id === idSel).estado = document.getElementById('novoEstado').value;
-        localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
-        fecharModalStatus(); renderizar();
+        localStorage.setItem('tb_master_total_v5', JSON.stringify(db));
+        fecharModais(); renderizar();
     }
 
     function eliminarPaciente() {
-        if(confirm("Eliminar?")) {
+        if(confirm("Deseja eliminar este paciente permanentemente?")) {
             db = db.filter(x => x.id !== idSel);
-            localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
-            fecharModalStatus(); renderizar();
+            localStorage.setItem('tb_master_total_v5', JSON.stringify(db));
+            fecharModais(); renderizar();
         }
     }
 
-    function renderizar() {
-        const lista = document.getElementById('lista');
-        const busca = document.getElementById('busca').value.toLowerCase();
-        lista.innerHTML = '';
-        let at=0, cu=0, ab=0, hi=0;
+    function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        const de = document.getElementById('f_de').value;
+        const ate = document.getElementById('f_ate').value;
 
-        db.filter(x => x.nome.toLowerCase().includes(busca)).forEach(p => {
-            if(p.estado==='Ativo') { at++; if(p.hiv==='Positivo') hi++; }
-            else if(p.estado==='Curado') cu++; else ab++;
-            lista.innerHTML += `
-                <div class="p-card" onclick="abrirStatus(${p.id})">
-                    <div style="font-size:10px; font-weight:bold; color:var(--text-muted)">NID: ${p.nid} | ${p.estado}</div>
-                    <div class="p-name">${p.nome}</div>
-                    <span class="tag" style="background:var(--primary-dark)">${p.regime}</span>
-                    <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV: ${p.hiv}</span>
-                </div>`;
+        const filtrados = db.filter(p => (!de || p.inicio >= de) && (!ate || p.inicio <= ate));
+
+        doc.setFontSize(16);
+        doc.text("Relatório de Controlo de BK (53/145 dias)", 14, 15);
+        
+        const rows = filtrados.map(p => [
+            p.nid, p.nome, p.regime, 
+            p.inicio ? new Date(p.inicio).toLocaleDateString('pt-PT') : '-',
+            calcularData(p.inicio, 53).toLocaleDateString('pt-PT'),
+            calcularData(p.inicio, 145).toLocaleDateString('pt-PT'),
+            p.estado
+        ]);
+
+        doc.autoTable({
+            startY: 25,
+            head: [['NID', 'Paciente', 'Regime', 'Início', 'BK 53d', 'BK 145d', 'Estado']],
+            body: rows,
+            headStyles: { fillColor: [10, 106, 94] }
         });
-        document.getElementById('count-at').innerText=at; document.getElementById('count-cu').innerText=cu;
-        document.getElementById('count-ab').innerText=ab; document.getElementById('count-hi').innerText=hi;
+        doc.save("relatorio_bk.pdf");
     }
+
+    function exportarTexto() {
+        const t = JSON.stringify(db);
+        navigator.clipboard.writeText(t).then(() => alert("Backup copiado!")).catch(() => window.prompt("Copie isto:", t));
+    }
+
+    function abrirImportar() {
+        const t = window.prompt("Cole o código de backup aqui:");
+        if(t) {
+            try { db = JSON.parse(t); localStorage.setItem('tb_master_total_v5', JSON.stringify(db)); renderizar(); }
+            catch(e) { alert("Erro ao importar."); }
+        }
+    }
+
     renderizar();
 </script>
 </body>

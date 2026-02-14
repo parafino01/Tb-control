@@ -5,85 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TB-CONTROL ULTRA</title>
     <style>
-        :root {
-            --primary: #004d40;
-            --accent: #ff6b00;
-            --bg: #f4f7f6;
-            --danger: #e74c3c;
-        }
-
+        :root { --primary: #004d40; --accent: #ff6b00; --bg: #f4f7f6; --danger: #e74c3c; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        
-        header { 
-            background: var(--primary); color: white; padding: 15px; 
-            text-align: center; border-bottom: 5px solid var(--accent);
-            position: sticky; top: 0; z-index: 100;
-        }
-
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 5px solid var(--accent); position: sticky; top: 0; z-index: 100; }
         .header-btns { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .btn-top { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 6px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; }
         
-        .btn-top { 
-            background: rgba(255,255,255,0.2); border: 1px solid white; 
-            color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;
-        }
-
-        .dashboard {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 10px; padding: 15px;
-        }
-
-        .card {
-            background: white; padding: 15px; border-radius: 12px;
-            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-bottom: 5px solid #ccc;
-        }
-
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-bottom: 5px solid #ccc; }
         .sensivel { border-bottom-color: #2ecc71; }
         .resistente { border-bottom-color: var(--danger); }
         .hiv-card { border-bottom-color: #9b59b6; }
 
         .search-container { padding: 0 15px; }
-        .search-bar { 
-            width: 100%; padding: 12px; border-radius: 25px; 
-            border: 1px solid #ddd; box-sizing: border-box; 
-        }
+        .search-bar { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
 
-        .form-container { 
-            background: white; margin: 15px; padding: 20px; 
-            border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
+        .form-container { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; color: #555; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
-        input, select {
-            width: 100%; padding: 12px; margin: 5px 0 15px 0;
-            border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
-        }
-
-        .btn-save {
-            width: 100%; padding: 15px; background: var(--accent);
-            color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px;
-        }
-
+        .btn-save { width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        
         .lista-pacientes { padding: 15px; }
-        .paciente-item { 
-            background: white; margin-bottom: 12px; padding: 15px; 
-            border-left: 8px solid var(--primary); border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            position: relative;
-        }
+        .paciente-item { background: white; margin-bottom: 12px; padding: 15px; border-left: 8px solid var(--primary); border-radius: 10px; position: relative; transition: 0.3s; }
+        
+        /* ALERTA DE DIA DE CONTROLO */
+        .alerta-hoje { border-left-color: var(--accent) !important; background: #fff3e0 !important; animation: blink 2s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        .btn-delete {
-            position: absolute; top: 10px; right: 10px;
-            background: #ffebee; color: var(--danger);
-            border: none; border-radius: 50%; width: 30px; height: 30px;
-            font-weight: bold; cursor: pointer;
-        }
-
-        .tag { 
-            display: inline-block; padding: 2px 8px; border-radius: 4px; 
-            font-size: 11px; font-weight: bold; color: white; margin-top: 5px;
-        }
+        .btn-delete { position: absolute; top: 10px; right: 10px; background: #ffebee; color: var(--danger); border: none; border-radius: 50%; width: 32px; height: 32px; font-weight: bold; cursor: pointer; }
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; margin-top: 5px; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -108,21 +59,19 @@
 </div>
 
 <div class="form-container">
-    <h3>Novo Registro Clínico</h3>
-    
-    <label>NID:</label>
-    <input type="number" id="nid" placeholder="Número de Identificação">
+    <label>NID (OpenMRS Style):</label>
+    <input type="text" id="nid" placeholder="Ex: 101/2026">
 
     <label>Nome Completo:</label>
     <input type="text" id="nome" placeholder="Nome do Paciente">
 
-    <label>Tipo de TB:</label>
+    <label>Regime de Tratamento:</label>
     <select id="tipo_tb">
-        <option value="Sensível">TB Sensível (Regime 2HRZE/4HR)</option>
-        <option value="Resistente">TB Resistente (Regime BPaL)</option>
+        <option value="Sensível">TB Sensível (2HRZE/4HR)</option>
+        <option value="Resistente">TB Resistente (BPaL)</option>
     </select>
 
-    <label>Data de Início do Tratamento:</label>
+    <label>Data de Início:</label>
     <input type="date" id="data_inicio">
 
     <label>Status HIV:</label>
@@ -132,81 +81,81 @@
         <option value="Não Testado">Não Testado</option>
     </select>
     
-    <button class="btn-save" onclick="salvarPaciente()">SALVAR NO SISTEMA</button>
+    <button class="btn-save" onclick="salvarPaciente()">💾 SALVAR REGISTO</button>
 </div>
 
 <div id="lista" class="lista-pacientes"></div>
 
 <script>
-    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_data')) || [];
+    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_vfinal')) || [];
 
     function salvarPaciente() {
-        const p = {
-            nid: document.getElementById('nid').value,
-            nome: document.getElementById('nome').value,
-            tipo: document.getElementById('tipo_tb').value,
-            inicio: document.getElementById('data_inicio').value,
-            hiv: document.getElementById('status_hiv').value,
-            id: Date.now()
-        };
+        const nid = document.getElementById('nid').value;
+        const nome = document.getElementById('nome').value;
+        const tipo = document.getElementById('tipo_tb').value;
+        const inicio = document.getElementById('data_inicio').value;
+        const hiv = document.getElementById('status_hiv').value;
 
-        if(!p.nome || !p.inicio) return alert("Por favor, preencha o Nome e a Data de Início.");
+        if(!nid || !nome || !inicio) return alert("Erro: Preencha NID, Nome e Data!");
 
+        const p = { id: Date.now(), nid, nome, tipo, inicio, hiv };
         pacientes.push(p);
-        atualizarStorage();
-        alert("Paciente cadastrado com sucesso!");
-        limparForm();
+        armazenar();
+        alert("Paciente salvo com sucesso!");
+        limpar();
     }
 
-    function eliminarPaciente(id) {
-        if(confirm("Tem certeza que deseja eliminar este registo? Esta ação não pode ser desfeita.")) {
-            pacientes = pacientes.filter(p => p.id !== id);
-            atualizarStorage();
-        }
-    }
-
-    function atualizarStorage() {
-        localStorage.setItem('tb_ultra_data', JSON.stringify(pacientes));
+    function armazenar() {
+        localStorage.setItem('tb_ultra_vfinal', JSON.stringify(pacientes));
         renderizar();
     }
 
-    function limparForm() {
+    function limpar() {
         document.getElementById('nid').value = "";
         document.getElementById('nome').value = "";
         document.getElementById('data_inicio').value = "";
     }
 
-    function calcularBK(dataInicio, dias) {
-        let data = new Date(dataInicio);
-        data.setDate(data.getDate() + dias);
-        return data.toLocaleDateString('pt-BR');
+    function calcularData(inicio, dias) {
+        let d = new Date(inicio);
+        d.setDate(d.getDate() + dias);
+        return d;
     }
 
     function renderizar() {
         const lista = document.getElementById('lista');
         const busca = document.getElementById('busca').value.toLowerCase();
         lista.innerHTML = "";
+        const hoje = new Date().setHours(0,0,0,0);
 
         let cSens = 0, cRes = 0, cHiv = 0;
 
-        pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.includes(busca)).forEach(p => {
-            if(p.tipo === "Sensível") cSens++;
-            if(p.tipo === "Resistente") cRes++;
+        pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca)).forEach(p => {
+            if(p.tipo === "Sensível") cSens++; else cRes++;
             if(p.hiv === "Positivo") cHiv++;
 
-            const dataBK1 = calcularBK(p.inicio, 53);
-            const dataBK2 = calcularBK(p.inicio, 145);
+            const d53 = calcularData(p.inicio, 53);
+            const d145 = calcularData(p.inicio, 145);
+            
+            // Verifica se hoje coincide com algum controle
+            const checkHoje = (hoje === d53.setHours(0,0,0,0) || hoje === d145.setHours(0,0,0,0));
+            
+            if(checkHoje && window.Android) {
+                window.Android.notificar("Dia de Controlo BK", "Hoje é dia de controlo para " + p.nome);
+            }
 
             lista.innerHTML += `
-                <div class="paciente-item">
-                    <button class="btn-delete" onclick="eliminarPaciente(${p.id})">X</button>
-                    <strong>NID: ${p.nid} - ${p.nome}</strong><br>
+                <div class="paciente-item ${checkHoje ? 'alerta-hoje' : ''}">
+                    <button class="btn-delete" onclick="eliminar(${p.id})">×</button>
+                    <strong>NID: ${p.nid}</strong><br>
+                    <span>${p.nome}</span><br>
                     <span class="tag" style="background:#2ecc71">${p.tipo}</span>
-                    <span class="tag" style="background:${p.hiv==='Positivo'?'#9b59b6':'#95a5a6'}">HIV: ${p.hiv}</span>
-                    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-                    <small>📅 Início: ${p.inicio.split('-').reverse().join('/')}</small><br>
-                    <small>🔬 1º Controle BK: <b>${dataBK1}</b></small><br>
-                    <small>🔬 2º Controle BK: <b>${dataBK2}</b></small>
+                    <span class="tag" style="background:${p.hiv==='Positivo'?'#9b59b6':'#7f8c8d'}">HIV: ${p.hiv}</span>
+                    <div style="margin-top:10px; font-size:0.9em; background:#f9f9f9; padding:8px; border-radius:5px;">
+                        📅 Início: ${p.inicio.split('-').reverse().join('/')}<br>
+                        🔬 1º Controlo (53º d): <b>${d53.toLocaleDateString('pt-BR')}</b><br>
+                        🔬 2º Controlo (145º d): <b>${d145.toLocaleDateString('pt-BR')}</b>
+                    </div>
                 </div>
             `;
         });
@@ -217,35 +166,36 @@
         document.getElementById('dash-hiv').innerText = cHiv;
     }
 
+    function eliminar(id) {
+        if(confirm("Deseja eliminar este registo permanentemente?")) {
+            pacientes = pacientes.filter(p => p.id !== id);
+            armazenar();
+        }
+    }
+
     function exportarDados() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pacientes));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "backup_tb_control.json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        const blob = new Blob([JSON.stringify(pacientes)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "backup_tb.json";
+        a.click();
     }
 
     function importarDados() {
         const input = document.createElement('input');
         input.type = 'file';
         input.onchange = e => {
-            const file = e.target.files[0];
             const reader = new FileReader();
-            reader.readAsText(file,'UTF-8');
-            reader.onload = readerEvent => {
-                const content = readerEvent.target.result;
-                pacientes = JSON.parse(content);
-                atualizarStorage();
-                alert("Dados importados com sucesso!");
-            }
-        }
+            reader.onload = ev => {
+                pacientes = JSON.parse(ev.target.result);
+                armazenar();
+            };
+            reader.readAsText(e.target.files[0]);
+        };
         input.click();
     }
 
     renderizar();
 </script>
-
 </body>
 </html>

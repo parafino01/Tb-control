@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL EXCEL</title>
+    <title>TB-CONTROL EXCEL PRO</title>
     
     <style>
         :root {
@@ -14,6 +14,7 @@
             --danger: #C53030;
             --success: #2F855A;
             --shadow: 0 4px 12px rgba(0,0,0,0.12);
+            --excel: #217346;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -30,7 +31,7 @@
 
         .utility-bar { padding: 12px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
         .btn-util { flex: 1; padding: 12px; border-radius: 10px; border: none; background: white; font-size: 11px; font-weight: 700; color: var(--primary); box-shadow: var(--shadow); cursor: pointer; }
-        .btn-excel { background: #217346 !important; color: white !important; }
+        .btn-excel { background: var(--excel) !important; color: white !important; }
 
         .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 10px; }
         .db-card { background: white; border-radius: 14px; padding: 15px; border-bottom: 5px solid #cbd5e0; box-shadow: var(--shadow); }
@@ -45,9 +46,11 @@
 
         .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
         .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; max-height: 88vh; border-radius: 28px; overflow-y: auto; }
-        label { font-size: 11px; font-weight: 900; color: #718096; display: block; margin-top: 15px; }
+        label { font-size: 11px; font-weight: 900; color: #718096; display: block; margin-top: 15px; text-transform: uppercase; }
         input, select { width: 100%; padding: 14px; margin: 5px 0; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
         
+        .btn-save { width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 20px; }
+
         .bk-check-area { background: #EDF2F7; padding: 18px; border-radius: 15px; margin: 15px 0; }
         .check-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-weight: 700; }
         .check-item input { width: 24px; height: 24px; margin: 0; }
@@ -67,12 +70,13 @@
 <div class="utility-bar">
     <button class="btn-util btn-excel" onclick="exportarExcel()">📊 Exportar Excel</button>
     <button class="btn-util" onclick="document.getElementById('fileInput').click()">📥 Importar Excel</button>
+    <button class="btn-util" style="background:#2b6cb0; color:white" onclick="abrirFiltros()">📋 Relatório Excel</button>
     <input type="file" id="fileInput" accept=".csv" onchange="importarExcel(event)">
 </div>
 
 <div class="db-grid">
-    <div class="db-card"><h3>Ativos</h3><div class="db-val" id="at">0</div></div>
-    <div class="db-card"><h3>HIV+</h3><div class="db-val" id="hi">0</div></div>
+    <div class="db-card" style="border-color:var(--accent)"><h3>Ativos</h3><div class="db-val" id="at">0</div></div>
+    <div class="db-card" style="border-color:#DD6B20"><h3>HIV+</h3><div class="db-val" id="hi">0</div></div>
 </div>
 
 <div id="lista" class="lista"></div>
@@ -81,45 +85,56 @@
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2>Nova Admissão</h2>
+        <h2 style="margin:0">Nova Admissão</h2>
         <label>NID</label><input type="text" id="nid">
-        <label>Nome</label><input type="text" id="nome">
-        <label>Tipo TB</label><select id="tipo_tb" onchange="atualizarRegimes()"><option value="Sensível">Sensível</option><option value="Resistente">Resistente</option></select>
+        <label>Nome Completo</label><input type="text" id="nome">
+        <label>Data de Início</label><input type="date" id="data_inicio">
+        <label>Tipo TB</label><select id="tipo_tb" onchange="atualizarRegimes()"><option value="Sensível">TB Sensível</option><option value="Resistente">TB Resistente</option></select>
         <label>Regime</label><select id="regime"></select>
         <label>HIV</label><select id="hiv"><option value="Negativo">Negativo</option><option value="Positivo">Positivo</option></select>
-        <label>Data Início</label><input type="date" id="data_inicio">
-        <button class="btn-util btn-excel" style="width:100%; margin-top:20px; padding:15px" onclick="salvarPaciente()">SALVAR</button>
+        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR</button>
         <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
     </div>
 </div>
 
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h2 id="st_nome"></h2>
+        <h2 id="st_nome" style="margin:0"></h2>
         <div class="bk-check-area">
-            <div class="check-item"><input type="checkbox" id="checkBK2"> <label for="checkBK2">BK 2º Mês (53 dias)</label></div>
-            <div class="check-item"><input type="checkbox" id="checkBK5"> <label for="checkBK5">BK 5º Mês (145 dias)</label></div>
+            <div class="check-item"><input type="checkbox" id="checkBK2"> <label for="checkBK2">BK 2º Mês Realizado</label></div>
+            <div class="check-item"><input type="checkbox" id="checkBK5"> <label for="checkBK5">BK 5º Mês Realizado</label></div>
         </div>
         <label>Estado</label>
         <select id="novoEstado"><option value="Ativo">Ativo</option><option value="Curado">Curado</option><option value="Abandono">Abandono</option></select>
-        <button class="btn-util btn-excel" style="width:100%; margin-top:20px; padding:15px" onclick="confirmarStatus()">ATUALIZAR</button>
-        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px">ELIMINAR</button>
+        <button class="btn-save" onclick="confirmarStatus()">SALVAR</button>
+        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:15px">ELIMINAR</button>
+    </div>
+</div>
+
+<div id="modalFiltros" class="modal">
+    <div class="modal-content">
+        <h2>Relatório Filtrado (Excel)</h2>
+        <label>Início (De):</label><input type="date" id="f_de">
+        <label>Fim (Até):</label><input type="date" id="f_ate">
+        <button class="btn-save" style="background:var(--excel)" onclick="exportarExcel(true)">GERAR PLANILHA FILTRADA</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">FECHAR</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('tb_excel_v1')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_excel_db')) || [];
     let idSel = null;
 
     function atualizarRegimes() {
         const t = document.getElementById('tipo_tb').value;
         const r = document.getElementById('regime');
-        r.innerHTML = t === "Sensível" ? "<option value='4HRZE/2HR'>4HRZE/2HR</option>" : "<option value='BPaL'>BPaL</option>";
+        r.innerHTML = t === "Sensível" ? "<option value='4HRZE/2HR'>4HRZE/2HR</option><option value='3HRZ+E/2HR'>3HRZ+E/2HR</option>" : "<option value='BPaL'>BPaL</option><option value='Longo'>Regime Longo</option>";
     }
     atualizarRegimes();
 
     function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     function abrirModalRegisto() { document.getElementById('modalRegisto').style.display='block'; }
+    function abrirFiltros() { document.getElementById('modalFiltros').style.display='block'; }
 
     function salvarPaciente() {
         const p = {
@@ -127,7 +142,8 @@
             regime: document.getElementById('regime').value, hiv: document.getElementById('hiv').value, 
             inicio: document.getElementById('data_inicio').value, estado: 'Ativo', bk2: false, bk5: false
         };
-        db.push(p); localStorage.setItem('tb_excel_v1', JSON.stringify(db));
+        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha os campos obrigatórios!");
+        db.push(p); localStorage.setItem('tb_excel_db', JSON.stringify(db));
         fecharModais(); renderizar();
     }
 
@@ -153,7 +169,7 @@
             lista.innerHTML += `
                 <div class="p-card ${alerta ? 'alerta-bk' : ''}" onclick="abrirStatus(${p.id})">
                     <div class="p-name">${p.nome}</div>
-                    <div style="font-size:11px">NID: ${p.nid} | BK2 Sugerido: ${d2 ? d2.toLocaleDateString() : '-'}</div>
+                    <div style="font-size:11px">NID: ${p.nid} | BK2 Sugerido: ${d2 ? d2.toLocaleDateString('pt-PT') : '-'}</div>
                 </div>`;
         });
         document.getElementById('at').innerText=at; document.getElementById('hi').innerText=hi;
@@ -173,52 +189,86 @@
         p.bk2 = document.getElementById('checkBK2').checked;
         p.bk5 = document.getElementById('checkBK5').checked;
         p.estado = document.getElementById('novoEstado').value;
-        localStorage.setItem('tb_excel_v1', JSON.stringify(db));
+        localStorage.setItem('tb_excel_db', JSON.stringify(db));
         fecharModais(); renderizar();
     }
 
-    // LÓGICA EXCEL (CSV)
-    function exportarExcel() {
-        let csv = "NID;Nome;Regime;HIV;Inicio;Data BK2;Data BK5;Estado\n";
-        db.forEach(p => {
-            const d2 = calcularData(p.inicio, 53).toLocaleDateString();
-            const d5 = calcularData(p.inicio, 145).toLocaleDateString();
-            csv += `${p.nid};${p.nome};${p.regime};${p.hiv};${p.inicio};${d2};${d5};${p.estado}\n`;
+    // --- LOGICA EXCEL (CSV) ---
+
+    function exportarExcel(filtrado = false) {
+        let dadosParaExportar = db;
+        
+        if(filtrado) {
+            const de = document.getElementById('f_de').value;
+            const ate = document.getElementById('f_ate').value;
+            dadosParaExportar = db.filter(p => (!de || p.inicio >= de) && (!ate || p.inicio <= ate));
+        }
+
+        if(dadosParaExportar.length === 0) return alert("Nenhum dado encontrado.");
+
+        // Cabeçalho compatível com Excel (separado por ponto e vírgula)
+        let csv = "\uFEFFNID;Nome;Regime;HIV;Data Inicio;Previsao BK2;Previsao BK5;Estado;BK2 Realizado;BK5 Realizado\n";
+        
+        dadosParaExportar.forEach(p => {
+            const d2 = calcularData(p.inicio, 53).toLocaleDateString('pt-PT');
+            const d5 = calcularData(p.inicio, 145).toLocaleDateString('pt-PT');
+            csv += `${p.nid};${p.nome};${p.regime};${p.hiv};${p.inicio};${d2};${d5};${p.estado};${p.bk2?'Sim':'Nao'};${p.bk5?'Sim':'Nao'}\n`;
         });
         
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "TB_CONTROLO.csv");
+        link.setAttribute("download", filtrado ? "Relatorio_TB_Filtrado.csv" : "Backup_TB_Excel.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        fecharModais();
     }
 
     function importarExcel(event) {
         const file = event.target.files[0];
+        if(!file) return;
+        
         const reader = new FileReader();
         reader.onload = function(e) {
-            const linhas = e.target.result.split('\n');
+            const conteudo = e.target.result;
+            const linhas = conteudo.split('\n');
             const novosDados = [];
+            
+            // Começa de 1 para pular o cabeçalho
             for(let i=1; i<linhas.length; i++) {
                 const cols = linhas[i].split(';');
                 if(cols.length < 5) continue;
+                
                 novosDados.push({
-                    id: Date.now() + i, nid: cols[0], nome: cols[1], regime: cols[2], 
-                    hiv: cols[3], inicio: cols[4], estado: cols[7] || 'Ativo', bk2: false, bk5: false
+                    id: Date.now() + i,
+                    nid: cols[0].replace('\uFEFF', ''), // Limpa caractere especial de encoding
+                    nome: cols[1],
+                    regime: cols[2],
+                    hiv: cols[3],
+                    inicio: cols[4],
+                    estado: cols[7] || 'Ativo',
+                    bk2: cols[8] === 'Sim',
+                    bk5: cols[9] === 'Sim'
                 });
             }
-            db = novosDados;
-            localStorage.setItem('tb_excel_v1', JSON.stringify(db));
-            renderizar();
-            alert("Dados importados com sucesso!");
+            
+            if(confirm("Isso substituirá todos os dados atuais. Continuar?")) {
+                db = novosDados;
+                localStorage.setItem('tb_excel_db', JSON.stringify(db));
+                renderizar();
+                alert("Dados importados com sucesso!");
+            }
         };
         reader.readAsText(file);
     }
 
     function eliminarPaciente() {
-        if(confirm("Eliminar?")) { db = db.filter(x => x.id !== idSel); localStorage.setItem('tb_excel_v1', JSON.stringify(db)); fecharModais(); renderizar(); }
+        if(confirm("Eliminar?")) { 
+            db = db.filter(x => x.id !== idSel); 
+            localStorage.setItem('tb_excel_db', JSON.stringify(db)); 
+            fecharModais(); renderizar(); 
+        }
     }
 
     renderizar();

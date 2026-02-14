@@ -3,106 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TB-CONTROL ULTRA v4</title>
+    <title>TB-CONTROL ULTRA v5</title>
     <style>
         :root {
             --primary: #004d40;
             --accent: #ff6b00;
             --bg: #f0f4f3;
-            --card-bg: #ffffff;
-            --text: #2c3e50;
+            --white: #ffffff;
             --danger: #e74c3c;
             --success: #2ecc71;
         }
 
-        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
         
+        /* Header & Pesquisa */
         header { 
             background: var(--primary); color: white; padding: 15px; 
             display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000;
         }
-
         .search-box { display: flex; align-items: center; }
         .search-input {
             width: 0; padding: 0; border: none; border-radius: 20px;
-            transition: width 0.4s ease, padding 0.4s ease;
-            outline: none; background: rgba(255,255,255,0.2); color: white;
+            transition: width 0.4s ease; outline: none; background: rgba(255,255,255,0.2); color: white;
         }
         .search-input.active { width: 140px; padding: 8px 15px; border: 1px solid rgba(255,255,255,0.5); }
-        .search-icon { font-size: 20px; cursor: pointer; padding: 5px; }
 
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        /* Dashboard */
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
         .card {
-            background: var(--card-bg); border-radius: 15px; padding: 12px;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.05); position: relative; overflow: hidden;
+            background: var(--white); border-radius: 12px; padding: 12px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.05); position: relative;
         }
         .card h3 { margin: 0; font-size: 10px; color: #7f8c8d; text-transform: uppercase; }
         .card p { margin: 5px 0 0 0; font-size: 22px; font-weight: 800; color: var(--primary); }
-        .card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; }
-        .c-total::before { background: var(--primary); }
-        .c-sens::before { background: var(--success); }
-        .c-res::before { background: var(--danger); }
-        .c-hiv::before { background: #9b59b6; }
 
-        .form-container { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
-        .btn-save { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-        .paciente-item { 
-            background: white; margin: 15px; padding: 15px; border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 6px solid var(--primary);
-            position: relative;
+        /* Botão Flutuante de Registo */
+        .fab {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            background: var(--accent); border-radius: 50%; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; box-shadow: 0 4px 15px rgba(255,107,0,0.4);
+            z-index: 2001; cursor: pointer;
         }
-        .alerta-hoje { border-left-color: var(--accent) !important; background: #fff3e0 !important; animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
-        .tag { font-size: 10px; padding: 3px 7px; border-radius: 5px; color: white; margin-right: 4px; font-weight: bold; text-transform: uppercase; }
-        .status-tag { background: #34495e; }
+        /* Modal / Formulário Expansível */
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); overflow-y: auto; }
+        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; border-radius: 15px; max-width: 500px; }
+        
+        .form-group { margin-bottom: 12px; }
+        label { font-size: 12px; font-weight: bold; color: #555; display: block; margin-bottom: 4px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        
+        .btn-main { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* Modal / Pop-up de Atualização */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 20% auto; padding: 20px; width: 85%; border-radius: 15px; }
+        /* Lista de Pacientes */
+        .paciente-item { 
+            background: white; margin: 12px; padding: 15px; border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 6px solid var(--primary);
+        }
+        .alerta-hoje { border-left-color: var(--accent) !important; background: #fff3e0 !important; }
+        .tag { font-size: 10px; padding: 3px 7px; border-radius: 5px; color: white; margin-right: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 800;">TB-CONTROL ULTRA</div>
+    <div style="font-weight: 800;">TB-CONTROL</div>
     <div class="search-box">
         <input type="text" id="busca" class="search-input" placeholder="NID ou Nome..." onkeyup="renderizar()">
-        <span class="search-icon" onclick="toggleSearch()">🔍</span>
+        <span onclick="toggleSearch()" style="cursor:pointer; padding:5px;">🔍</span>
     </div>
 </header>
 
 <div class="dashboard">
-    <div class="card c-total"><h3>Em Tratamento</h3><p id="dash-total">0</p></div>
-    <div class="card c-sens"><h3>TB Sensível</h3><p id="dash-sens">0</p></div>
-    <div class="card c-res"><h3>TB Resistente</h3><p id="dash-res">0</p></div>
-    <div class="card c-hiv"><h3>HIV+ (Ativos)</h3><p id="dash-hiv">0</p></div>
-</div>
-
-<div class="form-container">
-    <input type="text" id="nid" placeholder="NID do Paciente">
-    <input type="text" id="nome" placeholder="Nome Completo">
-    <select id="tipo_tb">
-        <option value="Sensível">TB Sensível</option>
-        <option value="Resistente">TB Resistente</option>
-    </select>
-    <input type="date" id="data_inicio">
-    <select id="status_hiv">
-        <option value="Negativo">HIV Negativo</option>
-        <option value="Positivo">HIV Positivo</option>
-    </select>
-    <button class="btn-save" onclick="salvarPaciente()">💾 CADASTRAR NOVO</button>
+    <div class="card"><h3>Em Tratamento</h3><p id="dash-total">0</p></div>
+    <div class="card"><h3>HIV+ Ativos</h3><p id="dash-hiv">0</p></div>
 </div>
 
 <div id="lista"></div>
 
+<div class="fab" onclick="abrirModalRegisto()">+</div>
+
+<div id="modalRegisto" class="modal">
+    <div class="modal-content">
+        <h3 style="color:var(--primary); margin-top:0;">Novo Registo Clínico</h3>
+        <div class="form-group"><label>NID (Identificador):</label><input type="text" id="nid"></div>
+        <div class="form-group"><label>Nome Completo:</label><input type="text" id="nome"></div>
+        <div class="form-group"><label>Endereço/Morada:</label><input type="text" id="endereco"></div>
+        <div class="form-group"><label>Contacto:</label><input type="text" id="contacto"></div>
+        <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;"><label>Idade:</label><input type="number" id="idade"></div>
+            <div class="form-group" style="flex:1;"><label>Sexo:</label>
+                <select id="sexo"><option value="M">M</option><option value="F">F</option></select>
+            </div>
+        </div>
+        <div class="form-group"><label>Regime de Tratamento:</label>
+            <select id="tipo_tb"><option value="Sensível">TB Sensível (2HRZE/4HR)</option><option value="Resistente">TB Resistente (BPaL)</option></select>
+        </div>
+        <div class="form-group"><label>Forma de Diagnóstico:</label>
+            <select id="diagnostico"><option value="GeneXpert">GeneXpert</option><option value="Bacilosscopia">Bacilosscopia</option><option value="Clínico">Critério Clínico</option></select>
+        </div>
+        <div class="form-group"><label>Status HIV:</label>
+            <select id="status_hiv"><option value="Negativo">Negativo</option><option value="Positivo">Positivo</option><option value="Não Testado">Não Testado</option></select>
+        </div>
+        <div class="form-group"><label>Data de Início:</label><input type="date" id="data_inicio"></div>
+        
+        <button class="btn-main" onclick="salvarPaciente()">💾 GRAVAR PACIENTE</button>
+        <button onclick="fecharModalRegisto()" style="width:100%; border:none; background:none; color:gray; margin-top:10px;">Cancelar</button>
+    </div>
+</div>
+
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h3>Atualizar Desfecho</h3>
-        <p id="nomeModal" style="font-weight: bold;"></p>
+        <h3 id="nomeModal">Paciente</h3>
+        <label>Alterar Estado do Tratamento:</label>
         <select id="novoEstado">
             <option value="Em tratamento">Em tratamento</option>
             <option value="Curado">Curado</option>
@@ -110,70 +125,67 @@
             <option value="Óbito">Óbito</option>
             <option value="Transferido">Transferido</option>
         </select>
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button onclick="fecharModal()" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ccc;">Cancelar</button>
-            <button onclick="confirmarStatus()" style="flex:1; padding:10px; border-radius:8px; background:var(--primary); color:white; border:none;">Atualizar</button>
-        </div>
-        <button onclick="eliminarPaciente()" style="width:100%; margin-top:15px; padding:8px; color:var(--danger); border:none; background:none; font-size:12px;">Eliminar Registo Permanentemente</button>
+        <button class="btn-main" onclick="confirmarStatus()">ATUALIZAR ESTADO</button>
+        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:15px;">Eliminar Permanentemente</button>
+        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; margin-top:10px;">Sair</button>
     </div>
 </div>
 
 <script>
-    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_v4')) || [];
+    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_v5')) || [];
     let idSelecionado = null;
 
-    function toggleSearch() {
-        const b = document.getElementById('busca');
-        b.classList.toggle('active');
-        if(b.classList.contains('active')) b.focus();
-    }
-
-    function salvarPaciente() {
-        const nid = document.getElementById('nid').value;
-        const nome = document.getElementById('nome').value;
-        const inicio = document.getElementById('data_inicio').value;
-        if(!nid || !nome || !inicio) return alert("Preencha os campos!");
-
-        const p = {
-            id: Date.now(),
-            nid, nome, 
-            tipo: document.getElementById('tipo_tb').value,
-            inicio,
-            hiv: document.getElementById('status_hiv').value,
-            estado: "Em tratamento"
-        };
-        pacientes.push(p);
-        armazenar();
-        alert("Paciente registado em tratamento.");
-    }
-
-    function abrirModal(id) {
+    function toggleSearch() { document.getElementById('busca').classList.toggle('active'); }
+    function abrirModalRegisto() { document.getElementById('modalRegisto').style.display = "block"; }
+    function fecharModalRegisto() { document.getElementById('modalRegisto').style.display = "none"; }
+    
+    function abrirModalStatus(id) {
         idSelecionado = id;
         const p = pacientes.find(x => x.id === id);
         document.getElementById('nomeModal').innerText = p.nome;
         document.getElementById('novoEstado').value = p.estado;
         document.getElementById('modalStatus').style.display = "block";
     }
+    function fecharModalStatus() { document.getElementById('modalStatus').style.display = "none"; }
 
-    function fecharModal() { document.getElementById('modalStatus').style.display = "none"; }
+    function salvarPaciente() {
+        const p = {
+            id: Date.now(),
+            nid: document.getElementById('nid').value,
+            nome: document.getElementById('nome').value,
+            endereco: document.getElementById('endereco').value,
+            contacto: document.getElementById('contacto').value,
+            idade: document.getElementById('idade').value,
+            sexo: document.getElementById('sexo').value,
+            tipo: document.getElementById('tipo_tb').value,
+            diagnostico: document.getElementById('diagnostico').value,
+            hiv: document.getElementById('status_hiv').value,
+            inicio: document.getElementById('data_inicio').value,
+            estado: "Em tratamento"
+        };
+        if(!p.nid || !p.nome || !p.inicio) return alert("NID, Nome e Data são obrigatórios!");
+        pacientes.push(p);
+        armazenar();
+        fecharModalRegisto();
+    }
 
     function confirmarStatus() {
         const p = pacientes.find(x => x.id === idSelecionado);
         p.estado = document.getElementById('novoEstado').value;
         armazenar();
-        fecharModal();
+        fecharModalStatus();
     }
 
     function eliminarPaciente() {
-        if(confirm("Deseja apagar este paciente para sempre?")) {
+        if(confirm("Apagar registo?")) {
             pacientes = pacientes.filter(x => x.id !== idSelecionado);
             armazenar();
-            fecharModal();
+            fecharModalStatus();
         }
     }
 
     function armazenar() {
-        localStorage.setItem('tb_ultra_v4', JSON.stringify(pacientes));
+        localStorage.setItem('tb_ultra_v5', JSON.stringify(pacientes));
         renderizar();
     }
 
@@ -182,57 +194,43 @@
         const busca = document.getElementById('busca').value.toLowerCase();
         lista.innerHTML = "";
         const hoje = new Date().setHours(0,0,0,0);
-        
-        let cTotal = 0, cSens = 0, cRes = 0, cHiv = 0;
+        let cTotal = 0, cHiv = 0;
 
         pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca)).forEach(p => {
-            // Lógica de Contagem (Apenas Ativos em tratamento)
             if(p.estado === "Em tratamento") {
                 cTotal++;
-                if(p.tipo === "Sensível") cSens++; else cRes++;
                 if(p.hiv === "Positivo") cHiv++;
             }
 
-            // Lógica de Notificação (Bloqueada se Óbito, Perda ou Transferido)
-            const desativarAviso = ["Óbito", "Perda de seguimento", "Transferido", "Curado"].includes(p.estado);
-            
+            const desativar = ["Óbito", "Perda de seguimento", "Transferido", "Curado"].includes(p.estado);
             const d53 = new Date(p.inicio); d53.setDate(d53.getDate() + 53);
             const d145 = new Date(p.inicio); d145.setDate(d145.getDate() + 145);
-            
-            const eDiaDeControle = (hoje === d53.setHours(0,0,0,0) || hoje === d145.setHours(0,0,0,0));
-            const alertaVisual = (eDiaDeControle && !desativarAviso) ? 'alerta-hoje' : '';
-
-            // Notificação Android Nativa
-            if(eDiaDeControle && !desativarAviso && window.Android) {
-                window.Android.notificar("Controlo BK", "Paciente " + p.nome + " tem controlo hoje.");
-            }
+            const alerta = (!desativar && (hoje === d53.setHours(0,0,0,0) || hoje === d145.setHours(0,0,0,0))) ? 'alerta-hoje' : '';
 
             lista.innerHTML += `
-                <div class="paciente-item ${alertaVisual}" onclick="abrirModal(${p.id})">
-                    <div style="display:flex; justify-content:space-between">
-                        <strong>${p.nid}</strong>
-                        <span class="tag status-tag">${p.estado}</span>
+                <div class="paciente-item ${alerta}" onclick="abrirModalStatus(${p.id})">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <strong>NID: ${p.nid}</strong>
+                        <span class="tag" style="background:#34495e">${p.estado}</span>
                     </div>
-                    <div style="margin:5px 0; font-size:1.1rem; color:var(--primary); font-weight:bold">${p.nome}</div>
-                    <span class="tag" style="background:#2ecc71">${p.tipo}</span>
-                    <span class="tag" style="background:#9b59b6">HIV: ${p.hiv}</span>
-                    
-                    ${!desativarAviso ? `
-                    <div style="margin-top:10px; font-size:0.85rem; color:#666; background:#f9f9f9; padding:8px; border-radius:8px">
-                        Controlo 1: <b>${d53.toLocaleDateString('pt-BR')}</b><br>
-                        Controlo 2: <b>${d145.toLocaleDateString('pt-BR')}</b>
+                    <div style="font-size:1.1rem; color:var(--primary); font-weight:bold; margin:5px 0;">${p.nome}</div>
+                    <div style="font-size:11px; color:gray;">📍 ${p.endereco} | 📞 ${p.contacto}</div>
+                    <div style="margin:8px 0;">
+                        <span class="tag" style="background:#2ecc71">${p.tipo}</span>
+                        <span class="tag" style="background:#9b59b6">HIV: ${p.hiv}</span>
+                        <span class="tag" style="background:#3498db">${p.diagnostico}</span>
                     </div>
-                    ` : `<div style="margin-top:5px; font-size:0.8rem; color:var(--danger)">Notificações suspensas para este estado.</div>`}
+                    ${!desativar ? `
+                    <div style="font-size:0.8rem; background:#f9f9f9; padding:8px; border-radius:8px;">
+                        🔬 Controle 1 (53d): <b>${d53.toLocaleDateString('pt-BR')}</b><br>
+                        🔬 Controle 2 (145d): <b>${d145.toLocaleDateString('pt-BR')}</b>
+                    </div>` : ''}
                 </div>
             `;
         });
-
         document.getElementById('dash-total').innerText = cTotal;
-        document.getElementById('dash-sens').innerText = cSens;
-        document.getElementById('dash-res').innerText = cRes;
         document.getElementById('dash-hiv').innerText = cHiv;
     }
-
     renderizar();
 </script>
 </body>

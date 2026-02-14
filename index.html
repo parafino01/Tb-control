@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL MASTER TOTAL</title>
+    <title>TB-CONTROL PRO BK TRACKER</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
@@ -14,24 +14,20 @@
             --accent-green: #0A6A5E;
             --text-main: #2D3748;
             --danger: #C53030;
+            --success: #2F855A;
         }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg-comfort); color: var(--text-main); padding-bottom: 100px; }
         
-        header { background: var(--primary-dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header { background: var(--primary-dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; border: none; color: white; outline: none; }
 
         .utility-bar { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
         .btn-util { padding: 10px; border-radius: 8px; border: none; background: white; font-size: 11px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex: 1; color: var(--primary-dark); }
         
-        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 10px; }
-        .db-card { background: white; border-radius: 12px; padding: 12px; border-bottom: 4px solid #cbd5e0; }
-        .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; }
-        .db-val { font-size: 22px; font-weight: 900; }
-
         .lista { padding: 0 20px; }
-        .p-card { background: white; padding: 16px; margin-bottom: 12px; border-radius: 15px; border-left: 5px solid var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
-        .p-card.atrasado { border-left-color: var(--danger); background: #FFF5F5; }
+        .p-card { background: white; padding: 16px; margin-bottom: 12px; border-radius: 15px; border-left: 5px solid var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .p-card.alerta-bk { border-left-color: var(--danger); background: #FFF5F5; }
         .p-name { font-size: 18px; font-weight: 800; margin: 4px 0; }
         .tag { font-size: 9px; padding: 4px 8px; border-radius: 5px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 4px; }
         
@@ -39,15 +35,19 @@
 
         .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
         .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; border-radius: 25px; max-height: 85vh; overflow-y: auto; }
-        input, select, textarea { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
+        
+        input, select { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; }
         .btn-save { width: 100%; padding: 16px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
-        label { font-size: 11px; font-weight: 800; color: #718096; text-transform: uppercase; }
+        
+        .bk-check-area { background: #EDF2F7; padding: 15px; border-radius: 12px; margin: 15px 0; }
+        .check-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
+        .check-item input { width: 20px; height: 20px; margin: 0; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 900; font-size: 20px;">TB-CONTROL</div>
+    <div style="font-weight: 900; font-size: 18px;">TB-CONTROL</div>
     <input type="text" id="busca" class="search-box" placeholder="Pesquisar..." onkeyup="renderizar()">
 </header>
 
@@ -57,66 +57,57 @@
     <button class="btn-util" style="background: #2b6cb0; color: white;" onclick="abrirFiltros()">📄 Relatório BK</button>
 </div>
 
-<div class="db-grid">
-    <div class="db-card"><h3>Ativos</h3><div class="db-val" id="at">0</div></div>
-    <div class="db-card"><h3>HIV+</h3><div class="db-val" id="hi">0</div></div>
-</div>
-
 <div id="lista" class="lista"></div>
 
 <button class="btn-fab" onclick="abrirRegisto()"><span>+</span></button>
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2 style="margin:0">Admissão Clínica</h2>
-        <label>NID</label><input type="text" id="nid">
-        <label>Nome Completo</label><input type="text" id="nome">
-        <div style="display:flex; gap:10px">
-            <div style="flex:1"><label>Idade</label><input type="number" id="idade"></div>
-            <div style="flex:1"><label>Sexo</label><select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select></div>
-        </div>
-        <label>Tipo de TB</label>
-        <select id="tipo_tb" onchange="atualizarRegimes()">
-            <option value="Sensível">TB Sensível</option>
-            <option value="Resistente">TB Resistente</option>
-        </select>
-        <label>Regime</label><select id="regime"></select>
-        <label>HIV</label>
-        <select id="hiv"><option value="Negativo">Negativo</option><option value="Positivo">Positivo</option></select>
+        <h2>Admissão Clínica</h2>
+        <input type="text" id="nid" placeholder="NID">
+        <input type="text" id="nome" placeholder="Nome Completo">
+        <select id="tipo_tb" onchange="atualizarRegimes()"><option value="Sensível">TB Sensível</option><option value="Resistente">TB Resistente</option></select>
+        <select id="regime"></select>
+        <select id="hiv"><option value="Negativo">HIV Negativo</option><option value="Positivo">HIV Positivo</option></select>
         <label>Data de Início</label><input type="date" id="data_inicio">
-        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR REGISTO</button>
-        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
-    </div>
-</div>
-
-<div id="modalFiltros" class="modal">
-    <div class="modal-content">
-        <h2>Relatório de BK</h2>
-        <label>Filtrar por Data de Início (De):</label><input type="date" id="f_de">
-        <label>Filtrar por Data de Início (Até):</label><input type="date" id="f_ate">
-        <button class="btn-save" style="background:#2b6cb0" onclick="gerarPDF()">GERAR PDF (53/145 DIAS)</button>
-        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Sair</button>
+        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px;">Cancelar</button>
     </div>
 </div>
 
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h2 id="st_nome"></h2>
-        <label>Alterar Estado</label>
+        <h2 id="st_nome" style="margin-bottom:5px"></h2>
+        <p id="st_info" style="font-size:12px; color:gray; margin-bottom:20px"></p>
+        
+        <div class="bk-check-area">
+            <h3 style="margin-top:0; font-size:14px; color:var(--primary-dark)">CONTROLO DE EXAMES (BK)</h3>
+            <div class="check-item">
+                <input type="checkbox" id="checkBK2"> 
+                <label for="checkBK2">BK 2º Mês Realizado (53 dias)</label>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="checkBK5"> 
+                <label for="checkBK5">BK 5º Mês Realizado (145 dias)</label>
+            </div>
+        </div>
+
+        <label>Estado do Paciente</label>
         <select id="novoEstado">
             <option value="Ativo">Ativo</option>
-            <option value="Curado">Curado</option>
+            <option value="Curado">Curado (Fim definitivo)</option>
             <option value="Abandono">Abandono</option>
             <option value="Óbito">Óbito</option>
         </select>
-        <button class="btn-save" onclick="confirmarStatus()">ATUALIZAR ESTADO</button>
+        
+        <button class="btn-save" onclick="confirmarStatus()">SALVAR ALTERAÇÕES</button>
         <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px; font-weight:800">ELIMINAR REGISTO</button>
-        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Fechar</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px;">Voltar</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('tb_master_total_v5')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_master_bk_tracker_v1')) || [];
     let idSel = null;
 
     function atualizarRegimes() {
@@ -129,20 +120,18 @@
     atualizarRegimes();
 
     function abrirRegisto() { document.getElementById('modalRegisto').style.display='block'; }
-    function abrirFiltros() { document.getElementById('modalFiltros').style.display='block'; }
     function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
     function salvarPaciente() {
         const p = {
             id: Date.now(), nid: document.getElementById('nid').value,
-            nome: document.getElementById('nome').value, idade: document.getElementById('idade').value,
-            sexo: document.getElementById('sexo').value, tipo: document.getElementById('tipo_tb').value,
-            regime: document.getElementById('regime').value, hiv: document.getElementById('hiv').value,
-            inicio: document.getElementById('data_inicio').value, estado: 'Ativo'
+            nome: document.getElementById('nome').value, regime: document.getElementById('regime').value,
+            hiv: document.getElementById('hiv').value, inicio: document.getElementById('data_inicio').value,
+            estado: 'Ativo', bk2_feito: false, bk5_feito: false
         };
-        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha NID, Nome e Data!");
+        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha os campos obrigatórios!");
         db.push(p);
-        localStorage.setItem('tb_master_total_v5', JSON.stringify(db));
+        localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db));
         fecharModais(); renderizar();
     }
 
@@ -158,91 +147,71 @@
         const busca = document.getElementById('busca').value.toLowerCase();
         const hoje = new Date();
         lista.innerHTML = '';
-        let at=0, hi=0;
 
         db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.includes(busca)).forEach(p => {
-            if(p.estado === 'Ativo') at++;
-            if(p.hiv === 'Positivo') hi++;
-
             const dataBK2 = calcularData(p.inicio, 53);
-            const isAtrasado = p.estado === 'Ativo' && dataBK2 && dataBK2 < hoje;
+            const dataBK5 = calcularData(p.inicio, 145);
+            
+            // Alerta se passou da data e NÃO foi marcado como feito
+            const alertaBK2 = (hoje > dataBK2 && !p.bk2_feito && p.estado === 'Ativo');
+            const alertaBK5 = (hoje > dataBK5 && !p.bk5_feito && p.estado === 'Ativo');
 
             lista.innerHTML += `
-                <div class="p-card ${isAtrasado ? 'atrasado' : ''}" onclick="abrirStatus(${p.id})">
+                <div class="p-card ${alertaBK2 || alertaBK5 ? 'alerta-bk' : ''}" onclick="abrirStatus(${p.id})">
                     <div style="font-size:10px; font-weight:bold; color:#718096">NID: ${p.nid} | ${p.estado}</div>
                     <div class="p-name">${p.nome}</div>
                     <span class="tag" style="background:var(--primary-dark)">${p.regime}</span>
                     <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV ${p.hiv}</span>
-                    <div style="margin-top:8px; font-size:11px; font-weight:bold; color:${isAtrasado ? 'var(--danger)' : 'var(--accent-green)'}">
-                        ${isAtrasado ? '⚠️ BK EM ATRASO: ' : '📅 BK 2ºM: '} ${dataBK2 ? dataBK2.toLocaleDateString('pt-PT') : '-'}
+                    
+                    <div style="margin-top:10px; font-size:11px;">
+                        <span style="color:${p.bk2_feito ? 'var(--success)' : (alertaBK2 ? 'var(--danger)' : 'gray')}">
+                            ${p.bk2_feito ? '✅ BK 2ºM' : (alertaBK2 ? '⚠️ BK 2ºM EM ATRASO' : '🕒 BK 2ºM: ' + dataBK2.toLocaleDateString('pt-PT'))}
+                        </span><br>
+                        <span style="color:${p.bk5_feito ? 'var(--success)' : (alertaBK5 ? 'var(--danger)' : 'gray')}">
+                            ${p.bk5_feito ? '✅ BK 5ºM' : (alertaBK5 ? '⚠️ BK 5ºM EM ATRASO' : '🕒 BK 5ºM: ' + dataBK5.toLocaleDateString('pt-PT'))}
+                        </span>
                     </div>
                 </div>`;
         });
-        document.getElementById('at').innerText = at;
-        document.getElementById('hi').innerText = hi;
     }
 
     function abrirStatus(id) {
         idSel = id;
         const p = db.find(x => x.id === id);
         document.getElementById('st_nome').innerText = p.nome;
+        document.getElementById('st_info').innerText = `NID: ${p.nid} | Início: ${p.inicio}`;
+        document.getElementById('checkBK2').checked = p.bk2_feito || false;
+        document.getElementById('checkBK5').checked = p.bk5_feito || false;
         document.getElementById('novoEstado').value = p.estado;
         document.getElementById('modalStatus').style.display='block';
     }
 
     function confirmarStatus() {
-        db.find(x => x.id === idSel).estado = document.getElementById('novoEstado').value;
-        localStorage.setItem('tb_master_total_v5', JSON.stringify(db));
+        const p = db.find(x => x.id === idSel);
+        p.bk2_feito = document.getElementById('checkBK2').checked;
+        p.bk5_feito = document.getElementById('checkBK5').checked;
+        p.estado = document.getElementById('novoEstado').value;
+        
+        localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db));
         fecharModais(); renderizar();
     }
 
     function eliminarPaciente() {
-        if(confirm("Deseja eliminar este paciente permanentemente?")) {
+        if(confirm("Eliminar permanentemente?")) {
             db = db.filter(x => x.id !== idSel);
-            localStorage.setItem('tb_master_total_v5', JSON.stringify(db));
+            localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db));
             fecharModais(); renderizar();
         }
     }
 
-    function gerarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'mm', 'a4');
-        const de = document.getElementById('f_de').value;
-        const ate = document.getElementById('f_ate').value;
-
-        const filtrados = db.filter(p => (!de || p.inicio >= de) && (!ate || p.inicio <= ate));
-
-        doc.setFontSize(16);
-        doc.text("Relatório de Controlo de BK (53/145 dias)", 14, 15);
-        
-        const rows = filtrados.map(p => [
-            p.nid, p.nome, p.regime, 
-            p.inicio ? new Date(p.inicio).toLocaleDateString('pt-PT') : '-',
-            calcularData(p.inicio, 53).toLocaleDateString('pt-PT'),
-            calcularData(p.inicio, 145).toLocaleDateString('pt-PT'),
-            p.estado
-        ]);
-
-        doc.autoTable({
-            startY: 25,
-            head: [['NID', 'Paciente', 'Regime', 'Início', 'BK 53d', 'BK 145d', 'Estado']],
-            body: rows,
-            headStyles: { fillColor: [10, 106, 94] }
-        });
-        doc.save("relatorio_bk.pdf");
-    }
-
     function exportarTexto() {
         const t = JSON.stringify(db);
-        navigator.clipboard.writeText(t).then(() => alert("Backup copiado!")).catch(() => window.prompt("Copie isto:", t));
+        navigator.clipboard.writeText(t).then(() => alert("Backup copiado!"));
     }
 
     function abrirImportar() {
-        const t = window.prompt("Cole o código de backup aqui:");
-        if(t) {
-            try { db = JSON.parse(t); localStorage.setItem('tb_master_total_v5', JSON.stringify(db)); renderizar(); }
-            catch(e) { alert("Erro ao importar."); }
-        }
+        const t = window.prompt("Cole o backup:");
+        if(t) { try { db = JSON.parse(t); localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db)); renderizar(); } catch(e) { alert("Erro!"); } }
     }
 
     renderizar();

@@ -3,164 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL POCKET</title>
+    <title>TB-CONTROL PROFESSIONAL</title>
     <style>
         :root {
-            --primary: #004d40;
-            --accent: #ff6b00;
-            --bg: #e0e5ec;
-            --shadow: 5px 5px 10px #b8b9be, -5px -5px 10px #ffffff;
+            --primary: #1e293b; /* Azul ardósia escuro profissional */
+            --accent: #10b981;  /* Esmeralda suave para ações positivas */
+            --bg: #f8fafc;      /* Fundo ultra-claro relaxante */
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --danger: #ef4444;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        /* Reset para evitar quebras de ecrã */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            font-family: sans-serif; margin: 0; background: var(--bg); 
-            color: #333; overflow-x: hidden; width: 100vw;
+            font-family: 'Inter', -apple-system, sans-serif; 
+            margin: 0; background: var(--bg); color: var(--text-main);
+            line-height: 1.5;
         }
         
+        /* Header Moderno */
         header { 
-            background: var(--primary); color: white; padding: 12px 15px; 
+            background: var(--primary); color: white; padding: 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 2000; height: 60px;
+            position: sticky; top: 0; z-index: 2000;
         }
+        .header-title { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+        .search-icon { font-size: 28px; cursor: pointer; opacity: 0.9; }
 
-        .dashboard { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; 
-        }
+        /* Dashboard de Alta Visibilidade */
+        .dashboard { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card {
-            background: var(--bg); border-radius: 15px; padding: 12px; text-align: center;
-            box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.4);
+            background: var(--card-bg); border-radius: 16px; padding: 20px; 
+            text-align: left; box-shadow: var(--shadow); border: 1px solid #f1f5f9;
         }
-        .card h3 { margin: 0; font-size: 9px; color: #7f8c8d; text-transform: uppercase; }
-        .card p { margin: 4px 0 0 0; font-size: 20px; font-weight: 900; color: var(--primary); }
+        .card h3 { margin: 0; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .card p { margin: 8px 0 0 0; font-size: 28px; font-weight: 800; color: var(--primary); }
+        .c-ativos { border-left: 5px solid var(--accent); }
+        .c-hiv { border-left: 5px solid #6366f1; }
 
-        .lista-container { padding: 5px 0 100px 0; }
-
+        /* Lista de Pacientes Refinada */
+        .lista-container { padding: 10px 15px 120px 15px; }
         .paciente-item { 
-            background: var(--bg); margin: 10px; padding: 15px; border-radius: 15px; 
-            box-shadow: var(--shadow); border-left: 6px solid var(--primary);
+            background: var(--card-bg); margin-bottom: 12px; padding: 20px; 
+            border-radius: 16px; box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9; position: relative;
+        }
+        .paciente-item::after {
+            content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 4px;
+            background: var(--accent); border-radius: 0 4px 4px 0;
         }
 
-        /* BOTÃO NOVO PACIENTE - FIXO NO CANTO */
+        /* Botão FAB - Design Flutuante Limpo */
         .fab {
-            position: fixed; bottom: 25px; right: 20px; width: 65px; height: 65px;
-            background: var(--accent); border-radius: 50%; color: white;
+            position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px;
+            background: var(--primary); border-radius: 20px; color: white;
             display: flex; align-items: center; justify-content: center;
-            font-size: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 3000;
-            border: 3px solid white; cursor: pointer;
+            font-size: 35px; box-shadow: 0 10px 25px rgba(30,41,59,0.3); 
+            z-index: 3000; border: none; cursor: pointer;
         }
 
-        /* MODAL COM SCROLL INTERNO */
-        .modal { 
-            display: none; position: fixed; z-index: 4000; 
-            left: 0; top: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.7); 
-        }
+        /* Modal Profissional */
+        .modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.8); backdrop-filter: blur(4px); }
         .modal-content { 
-            background: var(--bg); margin: 5vh auto; padding: 20px; 
-            width: 90%; max-height: 90vh; border-radius: 20px; 
-            overflow-y: auto; /* Permite scroll no formulário */
-            box-shadow: var(--shadow);
+            background: var(--card-bg); margin: 5vh auto; padding: 25px; 
+            width: 92%; max-height: 90vh; border-radius: 24px; overflow-y: auto;
         }
         
-        .form-section { margin-bottom: 15px; }
+        label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
         input, select { 
-            width: 100%; padding: 12px; border: none; border-radius: 10px; 
-            background: var(--bg); box-shadow: inset 3px 3px 6px #b8b9be, inset -3px -3px 6px #ffffff;
-            font-size: 14px; margin-top: 5px; margin-bottom: 10px;
+            width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; 
+            background: #fff; font-size: 15px; margin-bottom: 15px; color: var(--primary);
+            outline: none; transition: border-color 0.2s;
         }
+        input:focus { border-color: var(--accent); }
         
         .btn-main { 
-            width: 100%; padding: 16px; background: var(--primary); 
-            color: white; border: none; border-radius: 12px; 
-            font-weight: 900; font-size: 16px;
+            width: 100%; padding: 18px; background: var(--accent); 
+            color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 16px;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.2);
         }
 
-        .tag { font-size: 9px; padding: 3px 8px; border-radius: 5px; color: white; font-weight: bold; margin-right: 4px; }
-        .search-icon { font-size: 24px; }
+        .tag { font-size: 10px; padding: 4px 10px; border-radius: 6px; color: white; font-weight: 700; margin-right: 5px; text-transform: uppercase; }
+        .status-pill { font-size: 10px; color: var(--accent); font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 900;">TB-CONTROL</div>
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <input type="text" id="busca" style="display:none; width: 120px; padding: 5px; border-radius: 10px;" placeholder="Procurar..." onkeyup="renderizar()">
-        <span class="search-icon" onclick="toggleBusca()">🔍</span>
-    </div>
+    <div class="header-title">TB-CONTROL <span style="color:var(--accent)">PRO</span></div>
+    <span class="search-icon" onclick="toggleSearch()">🔍</span>
 </header>
 
+<div id="search-bar" style="display:none; padding:15px; background:var(--primary);">
+    <input type="text" id="busca" placeholder="Pesquisar por NID ou Nome..." onkeyup="renderizar()" style="margin:0; border:none;">
+</div>
+
 <div class="dashboard">
-    <div class="card"><h3>Ativos</h3><p id="dash-ativos">0</p></div>
-    <div class="card"><h3>Curados</h3><p id="dash-curados">0</p></div>
-    <div class="card"><h3>Inativos</h3><p id="dash-inativos">0</p></div>
-    <div class="card"><h3>HIV+</h3><p id="dash-hiv">0</p></div>
+    <div class="card c-ativos"><h3>Em Tratamento</h3><p id="dash-ativos">0</p></div>
+    <div class="card c-hiv"><h3>HIV+ Coinfetados</h3><p id="dash-hiv">0</p></div>
 </div>
 
 <div id="lista" class="lista-container"></div>
 
-<div class="fab" id="btnNovo" onclick="abrirModalRegisto()">+</div>
+<button class="fab" onclick="abrirModalRegisto()">+</button>
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h3 style="margin:0 0 15px 0; color:var(--primary); text-align:center;">Nova Inscrição</h3>
+        <h2 style="color:var(--primary); margin-top:0; font-weight:800;">Admissão Clínica</h2>
         
-        <label style="font-size: 11px; font-weight: bold;">IDENTIFICAÇÃO</label>
-        <input type="text" id="nid" placeholder="NID">
+        <label>Identificação</label>
+        <input type="text" id="nid" placeholder="NID do Paciente">
         <input type="text" id="nome" placeholder="Nome Completo">
-        <input type="text" id="endereco" placeholder="Morada/Contacto">
+        <input type="text" id="endereco" placeholder="Endereço e Contacto">
         
         <div style="display:flex; gap:10px;">
-            <input type="number" id="idade" placeholder="Idade">
-            <select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select>
+            <div style="flex:1"><label>Idade</label><input type="number" id="idade" placeholder="Anos"></div>
+            <div style="flex:1"><label>Sexo</label><select id="sexo"><option value="M">Masculino</option><option value="F">Feminino</option></select></div>
         </div>
 
-        <label style="font-size: 11px; font-weight: bold;">CLÍNICA</label>
-        <input type="number" id="peso" placeholder="Peso (kg)">
-        <select id="forma"><option value="Pulmonar">Pulmonar</option><option value="Extra-Pulmonar">Extra-Pulmonar</option></select>
-        <select id="diagnostico"><option value="GeneXpert">GeneXpert</option><option value="Bacilos">Bacilos</option><option value="Clínico">Clínico</option></select>
-        <select id="tipo_tb"><option value="Sensível">TB Sensível</option><option value="Resistente">TB Resistente</option></select>
+        <label>Diagnóstico e TB</label>
+        <select id="forma"><option value="Pulmonar">TB Pulmonar</option><option value="Extra-Pulmonar">TB Extra-Pulmonar</option></select>
+        <select id="tipo_tb"><option value="Sensível">TB Sensível (RS)</option><option value="Resistente">TB Resistente (RR)</option></select>
         
-        <label style="font-size: 11px; font-weight: bold;">HIV & CONTACTOS</label>
-        <select id="status_hiv" onchange="document.getElementById('divTARV').style.display = (this.value=='Positivo'?'block':'none')">
+        <label>Estado Serológico</label>
+        <select id="status_hiv">
             <option value="Negativo">HIV Negativo</option>
             <option value="Positivo">HIV Positivo</option>
         </select>
-        <div id="divTARV" style="display:none;"><select id="tarv"><option value="Sim">Em TARV</option><option value="Não">Não TARV</option></select></div>
-        <input type="number" id="contactos" placeholder="Contactos Rastreados">
         
-        <label style="font-size: 11px; font-weight: bold;">INÍCIO DO TRATAMENTO</label>
+        <label>Início do Tratamento</label>
         <input type="date" id="data_inicio">
 
-        <button class="btn-main" onclick="salvarPaciente()">GRAVAR PACIENTE</button>
-        <button onclick="fecharModalRegisto()" style="width:100%; border:none; background:none; color:gray; margin-top:15px;">Fechar</button>
+        <button class="btn-main" onclick="salvarPaciente()">💾 GRAVAR REGISTO</button>
+        <button onclick="fecharModalRegisto()" style="width:100%; border:none; background:none; color:#94a3b8; margin-top:20px; font-weight:bold; font-size:14px;">CANCELAR</button>
     </div>
 </div>
 
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h3 id="nomeModal" style="text-align:center;"></h3>
+        <h2 id="nomeModal" style="color:var(--primary); font-weight:800;"></h2>
+        <label>Atualizar Estado do Paciente</label>
         <select id="novoEstado">
             <option value="Em tratamento">Em tratamento</option>
             <option value="Curado">Curado</option>
-            <option value="Perda de seguimento">Perda de seguimento</option>
             <option value="Óbito">Óbito</option>
-            <option value="Transferido">Transferido</option>
+            <option value="Abandono">Abandono</option>
         </select>
         <button class="btn-main" onclick="confirmarStatus()">ATUALIZAR ESTADO</button>
-        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px;">Apagar Permanente</button>
-        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; margin-top:10px;">Sair</button>
+        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; color:#94a3b8; margin-top:20px;">FECHAR</button>
     </div>
 </div>
 
 <script>
-    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_v9')) || [];
+    let pacientes = JSON.parse(localStorage.getItem('tb_ultra_v11')) || [];
     let idSelecionado = null;
 
-    function toggleBusca() {
-        const b = document.getElementById('busca');
-        b.style.display = b.style.display === 'none' ? 'block' : 'none';
+    function toggleSearch() {
+        const s = document.getElementById('search-bar');
+        s.style.display = s.style.display === 'none' ? 'block' : 'none';
     }
 
     function abrirModalRegisto() { document.getElementById('modalRegisto').style.display = "block"; }
@@ -170,7 +171,6 @@
         idSelecionado = id; 
         const p = pacientes.find(x => x.id === id);
         document.getElementById('nomeModal').innerText = p.nome;
-        document.getElementById('novoEstado').value = p.estado;
         document.getElementById('modalStatus').style.display = "block"; 
     }
     function fecharModalStatus() { document.getElementById('modalStatus').style.display = "none"; }
@@ -181,15 +181,14 @@
             nid: document.getElementById('nid').value,
             nome: document.getElementById('nome').value,
             endereco: document.getElementById('endereco').value,
-            peso: document.getElementById('peso').value,
             tipo: document.getElementById('tipo_tb').value,
             hiv: document.getElementById('status_hiv').value,
             inicio: document.getElementById('data_inicio').value,
             estado: "Em tratamento"
         };
-        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha NID, Nome e Data!");
+        if(!p.nid || !p.nome || !p.inicio) return alert("NID, Nome e Data são campos obrigatórios.");
         pacientes.push(p);
-        localStorage.setItem('tb_ultra_v9', JSON.stringify(pacientes));
+        localStorage.setItem('tb_ultra_v11', JSON.stringify(pacientes));
         renderizar();
         fecharModalRegisto();
     }
@@ -197,49 +196,38 @@
     function confirmarStatus() {
         const p = pacientes.find(x => x.id === idSelecionado);
         p.estado = document.getElementById('novoEstado').value;
-        localStorage.setItem('tb_ultra_v9', JSON.stringify(pacientes));
+        localStorage.setItem('tb_ultra_v11', JSON.stringify(pacientes));
         renderizar();
         fecharModalStatus();
-    }
-
-    function eliminarPaciente() {
-        if(confirm("Eliminar registo?")) {
-            pacientes = pacientes.filter(x => x.id !== idSelecionado);
-            localStorage.setItem('tb_ultra_v9', JSON.stringify(pacientes));
-            renderizar();
-            fecharModalStatus();
-        }
     }
 
     function renderizar() {
         const lista = document.getElementById('lista');
         const busca = document.getElementById('busca').value.toLowerCase();
         lista.innerHTML = "";
-        
-        let cAtivos = 0, cCurados = 0, cInativos = 0, cHiv = 0;
+        let cAtivos = 0, cHiv = 0;
 
         pacientes.filter(p => p.nome.toLowerCase().includes(busca) || p.nid.toLowerCase().includes(busca)).forEach(p => {
-            if(p.estado === "Em tratamento") { cAtivos++; if(p.hiv === "Positivo") cHiv++; }
-            else if(p.estado === "Curado") { cCurados++; }
-            else { cInativos++; }
+            if(p.estado === "Em tratamento") { 
+                cAtivos++; 
+                if(p.hiv === "Positivo") cHiv++; 
+            }
 
             lista.innerHTML += `
                 <div class="paciente-item" onclick="abrirModalStatus(${p.id})">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:gray;">
-                        <span>NID: ${p.nid}</span>
-                        <span class="tag" style="background:#34495e">${p.estado}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:11px; font-weight:700; color:#64748b;">NID: ${p.nid}</span>
+                        <span class="status-pill">${p.estado}</span>
                     </div>
-                    <div style="font-size:18px; color:var(--primary); font-weight:bold; margin:5px 0;">${p.nome}</div>
-                    <div style="display:flex; gap:5px;">
-                        <span class="tag" style="background:#27ae60">${p.tipo}</span>
-                        <span class="tag" style="background:#9b59b6">HIV: ${p.hiv}</span>
+                    <div style="font-size:18px; color:var(--primary); font-weight:800; margin-bottom:12px; letter-spacing:-0.3px;">${p.nome}</div>
+                    <div style="display:flex; gap:6px;">
+                        <span class="tag" style="background:#0f172a">${p.tipo}</span>
+                        <span class="tag" style="background:#6366f1">HIV: ${p.hiv}</span>
                     </div>
                 </div>
             `;
         });
         document.getElementById('dash-ativos').innerText = cAtivos;
-        document.getElementById('dash-curados').innerText = cCurados;
-        document.getElementById('dash-inativos').innerText = cInativos;
         document.getElementById('dash-hiv').innerText = cHiv;
     }
     renderizar();

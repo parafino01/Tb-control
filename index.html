@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL PRO BK TRACKER</title>
+    <title>TB-CONTROL FULL DASHBOARD</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
@@ -13,101 +13,137 @@
             --bg-comfort: #F0F4F3;
             --accent-green: #0A6A5E;
             --text-main: #2D3748;
+            --text-muted: #718096;
             --danger: #C53030;
             --success: #2F855A;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { margin: 0; background: var(--bg-comfort); color: var(--text-main); padding-bottom: 100px; }
-        
-        header { background: var(--primary-dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; border: none; color: white; outline: none; }
+
+        /* HEADER ORIGINAL */
+        header { 
+            background: var(--primary-dark); padding: 15px 20px; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .app-title { color: white; font-weight: 800; font-size: 20px; }
+        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; display: flex; align-items: center; }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 14px; }
 
         .utility-bar { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-util { padding: 10px; border-radius: 8px; border: none; background: white; font-size: 11px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex: 1; color: var(--primary-dark); }
-        
-        .lista { padding: 0 20px; }
-        .p-card { background: white; padding: 16px; margin-bottom: 12px; border-radius: 15px; border-left: 5px solid var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .p-card.alerta-bk { border-left-color: var(--danger); background: #FFF5F5; }
-        .p-name { font-size: 18px; font-weight: 800; margin: 4px 0; }
-        .tag { font-size: 9px; padding: 4px 8px; border-radius: 5px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 4px; }
-        
-        .btn-fab { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: white; border-radius: 50%; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); font-size: 35px; color: var(--accent-green); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .btn-util { flex: 1; padding: 12px; border-radius: 10px; border: none; background: white; font-size: 11px; font-weight: 700; color: var(--primary-dark); box-shadow: var(--shadow); cursor: pointer; min-width: 80px; }
 
+        /* DASHBOARDS RECUPERADOS */
+        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 20px; }
+        .db-card { background: white; border-radius: 14px; padding: 16px; border-bottom: 5px solid #E2E8F0; box-shadow: var(--shadow); }
+        .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; font-weight: 900; }
+        .db-val { font-size: 28px; font-weight: 900; color: var(--primary-dark); margin-top: 4px; }
+
+        /* LISTA E CARDS */
+        .lista { padding: 10px 20px; }
+        .p-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); border-left: 5px solid var(--accent-green); position: relative; }
+        .p-card.alerta-bk { border-left-color: var(--danger); background: #FFF5F5; }
+        .p-name { font-size: 19px; font-weight: 800; margin: 8px 0; }
+        .tag { font-size: 10px; padding: 5px 10px; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 5px; }
+
+        /* MODAIS */
         .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
-        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; border-radius: 25px; max-height: 85vh; overflow-y: auto; }
-        
-        input, select { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; }
-        .btn-save { width: 100%; padding: 16px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
-        
-        .bk-check-area { background: #EDF2F7; padding: 15px; border-radius: 12px; margin: 15px 0; }
-        .check-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: bold; font-size: 14px; }
-        .check-item input { width: 20px; height: 20px; margin: 0; }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; max-height: 88vh; border-radius: 28px; overflow-y: auto; }
+        label { font-size: 11px; font-weight: 900; color: var(--text-muted); display: block; margin-top: 12px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
+        .btn-save { width: 100%; padding: 18px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
+
+        .bk-check-area { background: #f0f4f8; padding: 15px; border-radius: 15px; margin: 15px 0; border: 1px solid #d1d9e0; }
+        .check-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-weight: 800; font-size: 14px; }
+        .check-item input { width: 22px; height: 22px; margin: 0; }
+
+        .btn-fab { position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: none; z-index: 2000; font-size: 40px; color: var(--accent-green); }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: 900; font-size: 18px;">TB-CONTROL</div>
-    <input type="text" id="busca" class="search-box" placeholder="Pesquisar..." onkeyup="renderizar()">
+    <div class="app-title">TB-CONTROL</div>
+    <div class="search-box"><input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizar()"></div>
 </header>
 
 <div class="utility-bar">
     <button class="btn-util" onclick="exportarTexto()">📤 Backup</button>
     <button class="btn-util" onclick="abrirImportar()">📥 Restaurar</button>
-    <button class="btn-util" style="background: #2b6cb0; color: white;" onclick="abrirFiltros()">📄 Relatório BK</button>
+    <button class="btn-util" style="background:#2b6cb0; color:white" onclick="abrirFiltros()">📄 Relatório BK</button>
+</div>
+
+<div class="db-grid">
+    <div class="db-card" style="border-color:var(--accent-green)"><h3>Ativos</h3><div class="db-val" id="count-at">0</div></div>
+    <div class="db-card" style="border-color:#3182CE"><h3>Curados</h3><div class="db-val" id="count-cu">0</div></div>
+    <div class="db-card" style="border-color:#E53E3E"><h3>Abandono</h3><div class="db-val" id="count-ab">0</div></div>
+    <div class="db-card" style="border-color:#DD6B20"><h3>HIV+</h3><div class="db-val" id="count-hi">0</div></div>
 </div>
 
 <div id="lista" class="lista"></div>
 
-<button class="btn-fab" onclick="abrirRegisto()"><span>+</span></button>
+<button class="btn-fab" onclick="abrirRegisto()">+</button>
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2>Admissão Clínica</h2>
-        <input type="text" id="nid" placeholder="NID">
-        <input type="text" id="nome" placeholder="Nome Completo">
-        <select id="tipo_tb" onchange="atualizarRegimes()"><option value="Sensível">TB Sensível</option><option value="Resistente">TB Resistente</option></select>
-        <select id="regime"></select>
-        <select id="hiv"><option value="Negativo">HIV Negativo</option><option value="Positivo">HIV Positivo</option></select>
+        <h2 style="margin:0">Nova Admissão</h2>
+        <label>NID</label><input type="text" id="nid">
+        <label>Nome Completo</label><input type="text" id="nome">
+        <div style="display:flex; gap:10px">
+            <div style="flex:1"><label>Idade</label><input type="number" id="idade"></div>
+            <div style="flex:1"><label>Sexo</label><select id="sexo"><option value="M">M</option><option value="F">F</option></select></div>
+        </div>
+        <label>Tipo TB</label>
+        <select id="tipo_tb" onchange="atualizarRegimes()">
+            <option value="Sensível">Sensível</option>
+            <option value="Resistente">Resistente</option>
+        </select>
+        <label>Regime</label><select id="regime"></select>
+        <label>HIV</label><select id="hiv"><option value="Negativo">Negativo</option><option value="Positivo">Positivo</option></select>
         <label>Data de Início</label><input type="date" id="data_inicio">
         <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR</button>
-        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px;">Cancelar</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px; color:gray">Fechar</button>
     </div>
 </div>
 
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h2 id="st_nome" style="margin-bottom:5px"></h2>
-        <p id="st_info" style="font-size:12px; color:gray; margin-bottom:20px"></p>
-        
+        <h2 id="st_nome" style="margin:0"></h2>
+        <p id="st_nid" style="color:gray; font-size:12px"></p>
+
         <div class="bk-check-area">
-            <h3 style="margin-top:0; font-size:14px; color:var(--primary-dark)">CONTROLO DE EXAMES (BK)</h3>
-            <div class="check-item">
-                <input type="checkbox" id="checkBK2"> 
-                <label for="checkBK2">BK 2º Mês Realizado (53 dias)</label>
-            </div>
-            <div class="check-item">
-                <input type="checkbox" id="checkBK5"> 
-                <label for="checkBK5">BK 5º Mês Realizado (145 dias)</label>
-            </div>
+            <label style="color:var(--primary-dark); margin-bottom:10px">Controlo de Baciloscopia</label>
+            <div class="check-item"><input type="checkbox" id="checkBK2"> <label for="checkBK2">BK 2º Mês (53 dias)</label></div>
+            <div class="check-item"><input type="checkbox" id="checkBK5"> <label for="checkBK5">BK 5º Mês (145 dias)</label></div>
         </div>
 
-        <label>Estado do Paciente</label>
+        <label>Estado Clínico</label>
         <select id="novoEstado">
             <option value="Ativo">Ativo</option>
-            <option value="Curado">Curado (Fim definitivo)</option>
+            <option value="Curado">Curado</option>
             <option value="Abandono">Abandono</option>
             <option value="Óbito">Óbito</option>
         </select>
-        
         <button class="btn-save" onclick="confirmarStatus()">SALVAR ALTERAÇÕES</button>
-        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px; font-weight:800">ELIMINAR REGISTO</button>
-        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px;">Voltar</button>
+        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:15px">Eliminar Registo</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px; color:gray">Voltar</button>
+    </div>
+</div>
+
+<div id="modalFiltros" class="modal">
+    <div class="modal-content">
+        <h2>Relatório de BK</h2>
+        <label>Data Inicial (Início Tratamento)</label><input type="date" id="f_de">
+        <label>Data Final (Início Tratamento)</label><input type="date" id="f_ate">
+        <button class="btn-save" style="background:#2b6cb0" onclick="gerarPDF()">GERAR PDF (53/145 DIAS)</button>
+        <button onclick="fecharModais()" style="width:100%; border:none; background:none; margin-top:10px; color:gray">Fechar</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('tb_master_bk_tracker_v1')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_final_v10')) || [];
     let idSel = null;
 
     function atualizarRegimes() {
@@ -119,27 +155,21 @@
     }
     atualizarRegimes();
 
-    function abrirRegisto() { document.getElementById('modalRegisto').style.display='block'; }
     function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+    function abrirRegisto() { document.getElementById('modalRegisto').style.display='block'; }
+    function abrirFiltros() { document.getElementById('modalFiltros').style.display='block'; }
 
     function salvarPaciente() {
         const p = {
-            id: Date.now(), nid: document.getElementById('nid').value,
-            nome: document.getElementById('nome').value, regime: document.getElementById('regime').value,
+            id: Date.now(), nid: document.getElementById('nid').value, nome: document.getElementById('nome').value,
+            idade: document.getElementById('idade').value, sexo: document.getElementById('sexo').value,
+            tipo: document.getElementById('tipo_tb').value, regime: document.getElementById('regime').value,
             hiv: document.getElementById('hiv').value, inicio: document.getElementById('data_inicio').value,
-            estado: 'Ativo', bk2_feito: false, bk5_feito: false
+            estado: 'Ativo', bk2: false, bk5: false
         };
-        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha os campos obrigatórios!");
-        db.push(p);
-        localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db));
+        if(!p.nid || !p.nome || !p.inicio) return alert("Preencha os campos!");
+        db.push(p); localStorage.setItem('tb_final_v10', JSON.stringify(db));
         fecharModais(); renderizar();
-    }
-
-    function calcularData(base, dias) {
-        if(!base) return null;
-        let d = new Date(base);
-        d.setDate(d.getDate() + dias);
-        return d;
     }
 
     function renderizar() {
@@ -147,71 +177,78 @@
         const busca = document.getElementById('busca').value.toLowerCase();
         const hoje = new Date();
         lista.innerHTML = '';
+        let at=0, cu=0, ab=0, hi=0;
 
         db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.includes(busca)).forEach(p => {
-            const dataBK2 = calcularData(p.inicio, 53);
-            const dataBK5 = calcularData(p.inicio, 145);
-            
-            // Alerta se passou da data e NÃO foi marcado como feito
-            const alertaBK2 = (hoje > dataBK2 && !p.bk2_feito && p.estado === 'Ativo');
-            const alertaBK5 = (hoje > dataBK5 && !p.bk5_feito && p.estado === 'Ativo');
+            if(p.estado==='Ativo') at++; else if(p.estado==='Curado') cu++; else ab++;
+            if(p.hiv==='Positivo') hi++;
+
+            const d2 = new Date(p.inicio); d2.setDate(d2.getDate() + 53);
+            const d5 = new Date(p.inicio); d5.setDate(d5.getDate() + 145);
+            const alerta = (p.estado==='Ativo') && ((hoje > d2 && !p.bk2) || (hoje > d5 && !p.bk5));
 
             lista.innerHTML += `
-                <div class="p-card ${alertaBK2 || alertaBK5 ? 'alerta-bk' : ''}" onclick="abrirStatus(${p.id})">
-                    <div style="font-size:10px; font-weight:bold; color:#718096">NID: ${p.nid} | ${p.estado}</div>
+                <div class="p-card ${alerta ? 'alerta-bk' : ''}" onclick="abrirStatus(${p.id})">
+                    <div style="font-size:10px; font-weight:900; color:var(--text-muted)">NID: ${p.nid} | ${p.estado}</div>
                     <div class="p-name">${p.nome}</div>
                     <span class="tag" style="background:var(--primary-dark)">${p.regime}</span>
                     <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV ${p.hiv}</span>
-                    
-                    <div style="margin-top:10px; font-size:11px;">
-                        <span style="color:${p.bk2_feito ? 'var(--success)' : (alertaBK2 ? 'var(--danger)' : 'gray')}">
-                            ${p.bk2_feito ? '✅ BK 2ºM' : (alertaBK2 ? '⚠️ BK 2ºM EM ATRASO' : '🕒 BK 2ºM: ' + dataBK2.toLocaleDateString('pt-PT'))}
-                        </span><br>
-                        <span style="color:${p.bk5_feito ? 'var(--success)' : (alertaBK5 ? 'var(--danger)' : 'gray')}">
-                            ${p.bk5_feito ? '✅ BK 5ºM' : (alertaBK5 ? '⚠️ BK 5ºM EM ATRASO' : '🕒 BK 5ºM: ' + dataBK5.toLocaleDateString('pt-PT'))}
-                        </span>
+                    <div style="margin-top:10px; font-size:11px; font-weight:bold">
+                        <span style="color:${p.bk2?'var(--success)':(hoje>d2?'red':'gray')}">${p.bk2?'✅ BK2 Feito':(hoje>d2?'⚠️ BK2 ATRASADO':'🕒 BK2: '+d2.toLocaleDateString())}</span> | 
+                        <span style="color:${p.bk5?'var(--success)':(hoje>d5?'red':'gray')}">${p.bk5?'✅ BK5 Feito':(hoje>d5?'⚠️ BK5 ATRASADO':'🕒 BK5: '+d5.toLocaleDateString())}</span>
                     </div>
                 </div>`;
         });
+        document.getElementById('count-at').innerText=at; document.getElementById('count-cu').innerText=cu;
+        document.getElementById('count-ab').innerText=ab; document.getElementById('count-hi').innerText=hi;
     }
 
     function abrirStatus(id) {
-        idSel = id;
-        const p = db.find(x => x.id === id);
+        idSel = id; const p = db.find(x => x.id === id);
         document.getElementById('st_nome').innerText = p.nome;
-        document.getElementById('st_info').innerText = `NID: ${p.nid} | Início: ${p.inicio}`;
-        document.getElementById('checkBK2').checked = p.bk2_feito || false;
-        document.getElementById('checkBK5').checked = p.bk5_feito || false;
+        document.getElementById('st_nid').innerText = "NID: " + p.nid;
+        document.getElementById('checkBK2').checked = p.bk2;
+        document.getElementById('checkBK5').checked = p.bk5;
         document.getElementById('novoEstado').value = p.estado;
         document.getElementById('modalStatus').style.display='block';
     }
 
     function confirmarStatus() {
         const p = db.find(x => x.id === idSel);
-        p.bk2_feito = document.getElementById('checkBK2').checked;
-        p.bk5_feito = document.getElementById('checkBK5').checked;
+        p.bk2 = document.getElementById('checkBK2').checked;
+        p.bk5 = document.getElementById('checkBK5').checked;
         p.estado = document.getElementById('novoEstado').value;
-        
-        localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db));
+        localStorage.setItem('tb_final_v10', JSON.stringify(db));
         fecharModais(); renderizar();
-    }
-
-    function eliminarPaciente() {
-        if(confirm("Eliminar permanentemente?")) {
-            db = db.filter(x => x.id !== idSel);
-            localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db));
-            fecharModais(); renderizar();
-        }
     }
 
     function exportarTexto() {
         const t = JSON.stringify(db);
-        navigator.clipboard.writeText(t).then(() => alert("Backup copiado!"));
+        navigator.clipboard.writeText(t).then(() => alert("Copiado!")).catch(() => window.prompt("Copie:", t));
     }
 
     function abrirImportar() {
         const t = window.prompt("Cole o backup:");
-        if(t) { try { db = JSON.parse(t); localStorage.setItem('tb_master_bk_tracker_v1', JSON.stringify(db)); renderizar(); } catch(e) { alert("Erro!"); } }
+        if(t) { try { db = JSON.parse(t); localStorage.setItem('tb_final_v10', JSON.stringify(db)); renderizar(); } catch(e) { alert("Erro!"); } }
+    }
+
+    function gerarPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
+        const de = document.getElementById('f_de').value; const ate = document.getElementById('f_ate').value;
+        const filtrados = db.filter(p => (!de || p.inicio >= de) && (!ate || p.inicio <= ate));
+        
+        const rows = filtrados.map(p => [
+            p.nid, p.nome, p.regime, p.inicio, 
+            p.bk2 ? 'FEITO' : 'PENDENTE', p.bk5 ? 'FEITO' : 'PENDENTE', p.estado
+        ]);
+
+        doc.text("Relatório de Controlo BK (53/145 dias)", 14, 15);
+        doc.autoTable({ head: [['NID','Nome','Regime','Início','BK2','BK5','Estado']], body: rows, startY: 25 });
+        doc.save("relatorio_tb.pdf");
+    }
+
+    function eliminarPaciente() {
+        if(confirm("Eliminar?")) { db = db.filter(x => x.id !== idSel); localStorage.setItem('tb_final_v10', JSON.stringify(db)); fecharModais(); renderizar(); }
     }
 
     renderizar();

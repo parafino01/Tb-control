@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL MASTER PRO</title>
+    <title>TB-CONTROL MASTER PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root {
             --primary-dark: #0A2E26;
@@ -17,209 +20,219 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { margin: 0; background: var(--bg-comfort); color: var(--text-main); }
 
-        /* Header */
         header { 
             background: var(--primary-dark); padding: 15px 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky; top: 0; z-index: 1000;
         }
-        .app-title { color: white; font-weight: 800; font-size: 20px; letter-spacing: 0.5px; }
+        .app-title { color: white; font-weight: 800; font-size: 20px; }
         .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 45%; display: flex; align-items: center; }
-        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 14px; }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
 
-        /* Backup e Utilitários */
-        .utility-bar { padding: 10px 20px; display: flex; gap: 8px; overflow-x: auto; }
-        .btn-util { padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e0; background: white; font-size: 11px; font-weight: 700; white-space: nowrap; color: var(--primary-dark); }
+        .utility-bar { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-util { padding: 12px; border-radius: 10px; border: none; background: white; font-size: 11px; font-weight: 700; color: var(--primary-dark); box-shadow: var(--shadow); cursor: pointer; flex: 1; min-width: 100px; }
+        .btn-pdf { background: #C53030; color: white; }
 
-        /* Dashboard */
-        .section-label { padding: 15px 20px 5px; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 20px; }
         .db-card { background: white; border-radius: 14px; padding: 16px; border-bottom: 5px solid #E2E8F0; box-shadow: var(--shadow); }
         .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; font-weight: 900; }
         .db-val { font-size: 28px; font-weight: 900; color: var(--primary-dark); margin-top: 4px; }
 
-        /* Lista */
         .lista { padding: 10px 20px 120px; }
-        .p-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); position: relative; }
-        .p-card::after { content: ''; position: absolute; left: 0; top: 25%; height: 50%; width: 4px; background: var(--accent-green); border-radius: 0 4px 4px 0; }
-        .p-name { font-size: 19px; font-weight: 800; margin: 8px 0; color: #1A202C; }
+        .p-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); border-left: 5px solid var(--accent-green); }
+        .p-name { font-size: 19px; font-weight: 800; margin: 8px 0; }
         .tag { font-size: 10px; padding: 5px 10px; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 5px; }
 
-        /* Botão Novo FAB (Idêntico à Imagem) */
         .btn-fab {
             position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px;
             background: white; border-radius: 50%; display: flex; align-items: center;
             justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: none; z-index: 2000;
         }
-        .btn-fab span { font-size: 40px; color: var(--accent-green); font-weight: 300; line-height: 0; }
+        .btn-fab span { font-size: 40px; color: var(--accent-green); font-weight: 300; }
 
-        /* Modais */
         .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
         .modal-content { background: white; margin: 5% auto; padding: 25px; width: 92%; max-height: 88vh; border-radius: 28px; overflow-y: auto; }
-        label { font-size: 11px; font-weight: 900; color: var(--text-muted); display: block; margin-top: 12px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
-        .btn-save { width: 100%; padding: 18px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 16px; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 14px; margin: 6px 0 12px; border: 1.5px solid #E2E8F0; border-radius: 12px; font-size: 16px; background: #F9FAFB; }
+        .btn-save { width: 100%; padding: 18px; background: var(--accent-green); color: white; border: none; border-radius: 15px; font-weight: 800; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="app-title">TB-CONTROL</div>
-    <div class="search-box">
-        <input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizar()">
-    </div>
+    <div class="search-box"><input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizar()"></div>
 </header>
 
 <div class="utility-bar">
-    <button class="btn-util" onclick="exportarDados()">📤 Exportar Backup</button>
-    <button class="btn-util" onclick="document.getElementById('fileInput').click()">📥 Importar Backup</button>
-    <input type="file" id="fileInput" style="display:none" onchange="importarDados(event)">
+    <button class="btn-util" onclick="exportarTexto()">📤 Backup</button>
+    <button class="btn-util" onclick="abrirImportar()">📥 Restaurar</button>
+    <button class="btn-util btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
 </div>
 
-<div class="section-label">Painel de Monitorização</div>
 <div class="db-grid">
-    <div class="db-card" style="border-color:var(--accent-green)"><h3>Ativos</h3><div class="db-val" id="count-at">0</div></div>
-    <div class="db-card" style="border-color:#3182CE"><h3>Curados</h3><div class="db-val" id="count-cu">0</div></div>
-    <div class="db-card" style="border-color:#E53E3E"><h3>Abandono/Óbito</h3><div class="db-val" id="count-ab">0</div></div>
-    <div class="db-card" style="border-color:#DD6B20"><h3>Coinfetados HIV+</h3><div class="db-val" id="count-hi">0</div></div>
+    <div class="db-card"><h3>Ativos</h3><div class="db-val" id="count-at">0</div></div>
+    <div class="db-card"><h3>Curados</h3><div class="db-val" id="count-cu">0</div></div>
+    <div class="db-card"><h3>Abandono</h3><div class="db-val" id="count-ab">0</div></div>
+    <div class="db-card"><h3>HIV+</h3><div class="db-val" id="count-hi">0</div></div>
 </div>
 
-<div class="section-label">Lista de Pacientes</div>
 <div id="lista" class="lista"></div>
 
 <button class="btn-fab" onclick="abrirModalRegisto()"><span>+</span></button>
 
 <div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2 style="margin:0 0 10px 0; color:var(--primary-dark)">Nova Admissão</h2>
-        
-        <label>Identificação Única</label>
-        <input type="text" id="nid" placeholder="NID do Paciente">
+        <h2>Admissão Clínica</h2>
+        <input type="text" id="nid" placeholder="NID">
         <input type="text" id="nome" placeholder="Nome Completo">
         <input type="text" id="endereco" placeholder="Endereço / Contacto">
-        
         <div style="display:flex; gap:10px">
-            <div style="flex:1"><label>Idade</label><input type="number" id="idade" placeholder="Anos"></div>
-            <div style="flex:1"><label>Sexo</label><select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select></div>
+            <input type="number" id="idade" placeholder="Idade">
+            <select id="sexo"><option value="M">Masc</option><option value="F">Fem</option></select>
         </div>
-
-        <label>Dados Clínicos</label>
         <select id="forma"><option value="Pulmonar">TB Pulmonar</option><option value="Extra-Pulmonar">TB Extra-Pulmonar</option></select>
-        <select id="diagnostico"><option value="GeneXpert">Diagnóstico: GeneXpert</option><option value="Baciloscopia">Baciloscopia</option><option value="Clínico">Critério Clínico</option></select>
-        <select id="tipo_tb"><option value="Sensível">TB Sensível (RS)</option><option value="Resistente">TB Resistente (RR)</option></select>
-
-        <label>Estado Serológico</label>
+        <select id="tipo_tb" onchange="atualizarRegimes()">
+            <option value="Sensível">TB Sensível</option>
+            <option value="Resistente">TB Resistente (DR/MR)</option>
+        </select>
+        <select id="regime"></select>
         <select id="hiv" onchange="document.getElementById('tarv_area').style.display=(this.value=='Positivo'?'block':'none')">
             <option value="Negativo">HIV Negativo</option>
             <option value="Positivo">HIV Positivo</option>
         </select>
-        <div id="tarv_area" style="display:none">
-            <label>Em TARV?</label>
-            <select id="tarv"><option value="Sim">Sim, em tratamento</option><option value="Não">Não</option></select>
-        </div>
-        
-        <label>Data de Início e Rastreio</label>
-        <input type="number" id="contactos" placeholder="Nº de Contactos Rastreados">
+        <div id="tarv_area" style="display:none"><select id="tarv"><option value="Sim">Em TARV</option><option value="Não">Não</option></select></div>
         <input type="date" id="data_inicio">
+        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR</button>
+        <button onclick="fecharModalRegisto()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
+    </div>
+</div>
 
-        <button class="btn-save" onclick="salvarPaciente()">💾 GUARDAR REGISTO</button>
-        <button onclick="fecharModalRegisto()" style="width:100%; border:none; background:none; margin-top:15px; color:gray; font-weight:bold">CANCELAR</button>
+<div id="modalImport" class="modal">
+    <div class="modal-content">
+        <h2>Importar Backup</h2>
+        <textarea id="textoImport" rows="8" placeholder="Cole o código aqui..."></textarea>
+        <button class="btn-save" onclick="confirmarImportacao()">RESTAURAR DADOS</button>
+        <button onclick="document.getElementById('modalImport').style.display='none'" style="width:100%; border:none; background:none; margin-top:15px; color:gray">CANCELAR</button>
     </div>
 </div>
 
 <div id="modalStatus" class="modal">
     <div class="modal-content">
-        <h2 id="nomeModal" style="margin:0"></h2>
-        <p id="nidInfo" style="color:var(--text-muted); font-weight:bold"></p>
-        
-        <label>Atualizar Estado do Paciente</label>
+        <h2 id="nomeModal"></h2>
         <select id="novoEstado">
-            <option value="Ativo">Ativo (Em tratamento)</option>
+            <option value="Ativo">Ativo</option>
             <option value="Curado">Curado</option>
             <option value="Abandono">Abandono</option>
             <option value="Óbito">Óbito</option>
-            <option value="Transferido">Transferido</option>
         </select>
-        
-        <button class="btn-save" onclick="confirmarStatus()">ATUALIZAR ESTADO</button>
-        <button onclick="eliminarPaciente()" style="width:100%; color:#E53E3E; border:none; background:none; margin-top:20px; font-weight:800">Eliminar Paciente Permanentemente</button>
-        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; margin-top:15px; color:gray">Fechar</button>
+        <button class="btn-save" onclick="confirmarStatus()">ATUALIZAR</button>
+        <button onclick="eliminarPaciente()" style="width:100%; color:red; border:none; background:none; margin-top:20px">Eliminar Permanente</button>
+        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; margin-top:10px">Sair</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('tb_master_final')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_jstudio_pdf_v1')) || [];
     let idSel = null;
 
+    // Lógica de Regimes
+    function atualizarRegimes() {
+        const tipo = document.getElementById('tipo_tb').value;
+        const reg = document.getElementById('regime');
+        reg.innerHTML = "";
+        if(tipo === "Sensível") {
+            ["4HRZE/2HR", "3HRZ+E/2HR"].forEach(o => reg.innerHTML += `<option value="${o}">${o}</option>`);
+        } else {
+            ["BPaL", "Regime Longo"].forEach(o => reg.innerHTML += `<option value="${o}">${o}</option>`);
+        }
+    }
+    atualizarRegimes();
+
+    // Funções de Modal
     function abrirModalRegisto() { document.getElementById('modalRegisto').style.display='block'; }
     function fecharModalRegisto() { document.getElementById('modalRegisto').style.display='none'; }
     function fecharModalStatus() { document.getElementById('modalStatus').style.display='none'; }
+    function abrirImportar() { document.getElementById('modalImport').style.display='block'; }
 
+    // Salvar e Renderizar
     function salvarPaciente() {
-        const nid = document.getElementById('nid').value;
-        const nome = document.getElementById('nome').value;
-        if(!nid || !nome) return alert("Por favor, preencha o NID e o Nome.");
-
         const p = {
-            id: Date.now(), nid, nome, 
-            endereco: document.getElementById('endereco').value,
-            idade: document.getElementById('idade').value,
-            sexo: document.getElementById('sexo').value,
-            forma: document.getElementById('forma').value,
-            diag: document.getElementById('diagnostico').value,
-            tipo: document.getElementById('tipo_tb').value,
-            hiv: document.getElementById('hiv').value,
-            tarv: document.getElementById('tarv').value,
-            contactos: document.getElementById('contactos').value,
-            inicio: document.getElementById('data_inicio').value,
-            estado: 'Ativo'
+            id: Date.now(), nid: document.getElementById('nid').value,
+            nome: document.getElementById('nome').value, forma: document.getElementById('forma').value,
+            regime: document.getElementById('regime').value, hiv: document.getElementById('hiv').value,
+            estado: 'Ativo', data: document.getElementById('data_inicio').value
         };
+        if(!p.nid || !p.nome) return alert("NID e Nome obrigatórios");
         db.push(p);
-        localStorage.setItem('tb_master_final', JSON.stringify(db));
-        fecharModalRegisto();
-        renderizar();
+        localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
+        fecharModalRegisto(); renderizar();
+    }
+
+    // PDF GENERATOR
+    function gerarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18);
+        doc.text("Relatório de Pacientes TB-CONTROL", 14, 20);
+        doc.setFontSize(10);
+        doc.text(`Data: ${new Date().toLocaleDateString()}`, 14, 28);
+
+        const rows = [];
+        db.forEach(p => {
+            rows.push([p.nid, p.nome, p.regime, p.hiv, p.estado]);
+        });
+
+        doc.autoTable({
+            startY: 35,
+            head: [['NID', 'Nome', 'Regime', 'HIV', 'Estado']],
+            body: rows,
+            theme: 'grid',
+            headStyles: { fillColor: [10, 106, 94] }
+        });
+
+        // Tenta salvar, se falhar (comum no JStudio), avisa o usuário
+        try {
+            doc.save("relatorio_tb.pdf");
+        } catch (e) {
+            alert("Ocorreu um erro ao salvar o PDF. Verifique as permissões de armazenamento do aplicativo.");
+        }
+    }
+
+    // Backup Funções
+    function exportarTexto() {
+        const txt = JSON.stringify(db);
+        navigator.clipboard.writeText(txt).then(() => alert("Copiado!")).catch(() => window.prompt("Copie:", txt));
+    }
+
+    function confirmarImportacao() {
+        try {
+            db = JSON.parse(document.getElementById('textoImport').value);
+            localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
+            renderizar();
+            document.getElementById('modalImport').style.display='none';
+        } catch(e) { alert("Código inválido"); }
     }
 
     function abrirStatus(id) {
         idSel = id; const p = db.find(x => x.id === id);
         document.getElementById('nomeModal').innerText = p.nome;
-        document.getElementById('nidInfo').innerText = "NID: " + p.nid;
         document.getElementById('novoEstado').value = p.estado;
         document.getElementById('modalStatus').style.display='block';
     }
 
     function confirmarStatus() {
         db.find(x => x.id === idSel).estado = document.getElementById('novoEstado').value;
-        localStorage.setItem('tb_master_final', JSON.stringify(db));
+        localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
         fecharModalStatus(); renderizar();
     }
 
     function eliminarPaciente() {
-        if(confirm("Tem a certeza? Esta ação não pode ser desfeita.")) {
+        if(confirm("Eliminar?")) {
             db = db.filter(x => x.id !== idSel);
-            localStorage.setItem('tb_master_final', JSON.stringify(db));
+            localStorage.setItem('tb_jstudio_pdf_v1', JSON.stringify(db));
             fecharModalStatus(); renderizar();
         }
-    }
-
-    function exportarDados() {
-        const data = JSON.stringify(db);
-        const blob = new Blob([data], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = `backup_tbcontrol_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-    }
-
-    function importarDados(event) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            db = JSON.parse(e.target.result);
-            localStorage.setItem('tb_master_final', JSON.stringify(db));
-            renderizar();
-            alert("Dados importados com sucesso!");
-        };
-        reader.readAsText(event.target.files[0]);
     }
 
     function renderizar() {
@@ -228,23 +241,15 @@
         lista.innerHTML = '';
         let at=0, cu=0, ab=0, hi=0;
 
-        db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.includes(busca)).forEach(p => {
+        db.filter(x => x.nome.toLowerCase().includes(busca)).forEach(p => {
             if(p.estado==='Ativo') { at++; if(p.hiv==='Positivo') hi++; }
-            else if(p.estado==='Curado') cu++; 
-            else ab++;
-
+            else if(p.estado==='Curado') cu++; else ab++;
             lista.innerHTML += `
                 <div class="p-card" onclick="abrirStatus(${p.id})">
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:900; color:var(--text-muted)">
-                        <span>NID: ${p.nid}</span>
-                        <span style="color:var(--accent-green)">${p.estado.toUpperCase()}</span>
-                    </div>
+                    <div style="font-size:10px; font-weight:bold; color:var(--text-muted)">NID: ${p.nid} | ${p.estado}</div>
                     <div class="p-name">${p.nome}</div>
-                    <div style="display:flex; gap:5px;">
-                        <span class="tag" style="background:var(--primary-dark)">${p.tipo}</span>
-                        <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV: ${p.hiv}</span>
-                        ${p.forma==='Extra-Pulmonar'?'<span class="tag" style="background:#9b59b6">EXTRA</span>':''}
-                    </div>
+                    <span class="tag" style="background:var(--primary-dark)">${p.regime}</span>
+                    <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV: ${p.hiv}</span>
                 </div>`;
         });
         document.getElementById('count-at').innerText=at; document.getElementById('count-cu').innerText=cu;

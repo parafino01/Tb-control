@@ -3,77 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TB-CONTROL CLEAN</title>
+    <title>TB-CONTROL PROFESSIONAL</title>
     <style>
         :root {
             --primary-dark: #0A2E26;
-            --bg-gray: #F4F7F6;
+            --bg-comfort: #F0F4F3; /* Fundo confortável */
             --card-white: #ffffff;
-            --text-gray: #718096;
             --accent-green: #0A6A5E;
-            --accent-blue: #2B6CB0;
-            --accent-red: #C53030;
-            --accent-orange: #C05621;
+            --text-main: #2D3748;
+            --text-muted: #718096;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: sans-serif; }
-        body { margin: 0; background: var(--bg-gray); color: #2D3748; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background: var(--bg-comfort); color: var(--text-main); }
 
+        /* Header Estilo Imagem */
         header { 
             background: var(--primary-dark); padding: 15px 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000;
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        .app-title { color: white; font-weight: 800; font-size: 18px; }
-        
-        .search-box { 
-            background: rgba(255,255,255,0.1); border-radius: 12px; 
-            display: flex; align-items: center; padding: 5px 15px; width: 60%; 
-        }
-        .search-box input { 
-            background: transparent; border: none; color: white; width: 100%; 
-            outline: none; font-size: 14px; 
-        }
+        .app-title { color: white; font-weight: 700; font-size: 18px; }
+        .search-box { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 15px; width: 55%; display: flex; align-items: center; }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 14px; }
+        .search-box input::placeholder { color: rgba(255,255,255,0.5); }
 
-        .section-title { padding: 20px 20px 5px; font-size: 11px; font-weight: 900; color: #A0AEC0; text-transform: uppercase; }
-        
         /* Dashboard Grid 2x2 */
-        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px 20px; }
-        .db-card { 
-            background: white; border-radius: 15px; padding: 18px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-bottom: 5px solid #DDD;
-        }
-        .db-card h3 { margin: 0; font-size: 10px; color: var(--text-gray); text-transform: uppercase; }
-        .db-val { font-size: 28px; font-weight: 900; margin: 5px 0; color: #1A202C; }
+        .section-label { padding: 20px 20px 5px; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 20px; }
+        .db-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border-bottom: 4px solid #E2E8F0; }
+        .db-card h3 { margin: 0; font-size: 10px; color: var(--accent-green); text-transform: uppercase; font-weight: 800; }
+        .db-val { font-size: 26px; font-weight: 900; margin: 5px 0; color: var(--primary-dark); }
         
-        .c-1 { border-color: var(--accent-green); }
-        .c-2 { border-color: var(--accent-blue); }
-        .c-3 { border-color: var(--accent-red); }
-        .c-4 { border-color: var(--accent-orange); }
+        /* Cores das Bordas */
+        .c-at { border-color: var(--accent-green); }
+        .c-cu { border-color: #3182CE; }
+        .c-ab { border-color: #E53E3E; }
+        .c-hi { border-color: #DD6B20; }
 
-        /* Lista */
-        .lista { padding: 5px 20px 100px; }
-        .p-item { 
-            background: white; border-radius: 18px; padding: 20px; 
-            margin-bottom: 15px; border: 1px solid #EDF2F7;
-        }
-        .p-name { font-size: 18px; font-weight: 800; margin: 8px 0; }
-        .tag { font-size: 10px; padding: 4px 10px; border-radius: 6px; color: white; font-weight: bold; margin-right: 5px; }
+        /* Lista de Pacientes */
+        .lista { padding: 5px 20px 110px; }
+        .p-card { background: white; border-radius: 15px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
+        .p-nid { font-size: 10px; font-weight: 700; color: var(--text-muted); background: #EDF2F7; padding: 3px 8px; border-radius: 5px; }
+        .p-name { font-size: 18px; font-weight: 700; margin: 10px 0; color: #1A202C; }
+        .tag { font-size: 9px; padding: 4px 8px; border-radius: 6px; color: white; font-weight: 800; text-transform: uppercase; margin-right: 5px; }
 
-        /* Botão Novo Paciente (Estilo Imagem) */
-        .btn-add {
-            position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px;
+        /* BOTÃO NOVO PACIENTE - IDÊNTICO À IMAGEM */
+        .btn-fab {
+            position: fixed; bottom: 30px; right: 25px; width: 62px; height: 62px;
             background: white; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            z-index: 2000; border: none; cursor: pointer;
+            justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: none; z-index: 2000;
         }
-        .btn-add span { font-size: 35px; color: var(--accent-green); font-weight: 200; }
+        .btn-fab span { font-size: 38px; color: var(--accent-green); font-weight: 200; line-height: 0; margin-top: -4px; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 10% auto; padding: 25px; width: 90%; border-radius: 25px; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #E2E8F0; border-radius: 12px; }
-        .btn-save { width: 100%; padding: 16px; background: var(--accent-green); color: white; border: none; border-radius: 12px; font-weight: bold; }
+        /* Modais */
+        .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+        .modal-content { background: white; margin: 10% auto; padding: 25px; width: 90%; max-height: 85vh; border-radius: 24px; overflow-y: auto; }
+        input, select { width: 100%; padding: 14px; margin: 8px 0 16px; border: 1px solid #E2E8F0; border-radius: 12px; font-size: 16px; outline: none; background: #F9FAFB; }
+        .btn-save { width: 100%; padding: 16px; background: var(--accent-green); color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; }
+        .btn-delete { width: 100%; padding: 10px; background: none; color: #E53E3E; border: none; font-weight: 600; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -81,55 +69,113 @@
 <header>
     <div class="app-title">TB-CONTROL</div>
     <div class="search-box">
-        <input type="text" id="busca" placeholder="Pesquisar..." onkeyup="renderizar()">
+        <input type="text" id="busca" placeholder="Pesquisar NID ou Nome..." onkeyup="renderizar()">
     </div>
 </header>
 
-<div class="section-title">Resumo Clínico</div>
+<div class="section-label">Painel de Controlo</div>
 <div class="db-grid">
-    <div class="db-card c-1"><h3>Ativos</h3><div class="db-val" id="at">0</div></div>
-    <div class="db-card c-2"><h3>Curados</h3><div class="db-val" id="cu">0</div></div>
-    <div class="db-card c-3"><h3>Abandono</h3><div class="db-val" id="ab">0</div></div>
-    <div class="db-card c-4"><h3>HIV+</h3><div class="db-val" id="hi">0</div></div>
+    <div class="db-card c-at"><h3>Ativos</h3><div class="db-val" id="count-at">0</div></div>
+    <div class="db-card c-cu"><h3>Curados</h3><div class="db-val" id="count-cu">0</div></div>
+    <div class="db-card c-ab"><h3>Abandono</h3><div class="db-val" id="count-ab">0</div></div>
+    <div class="db-card c-hi"><h3>HIV+</h3><div class="db-val" id="count-hi">0</div></div>
 </div>
 
-<div class="section-title">Pacientes Registados</div>
+<div class="section-label">Lista de Pacientes</div>
 <div id="lista" class="lista"></div>
 
-<button class="btn-add" onclick="abrir()"><span>+</span></button>
+<button class="btn-fab" onclick="abrirModalRegisto()"><span>+</span></button>
 
-<div id="modal" class="modal">
+<div id="modalRegisto" class="modal">
     <div class="modal-content">
-        <h2 style="margin:0 0 20px 0">Novo Paciente</h2>
-        <input type="text" id="nid" placeholder="NID">
-        <input type="text" id="nome" placeholder="Nome Completo">
-        <select id="tipo"><option value="Sensível">TB Sensível</option><option value="Resistente">TB Resistente</option></select>
-        <select id="hiv"><option value="Negativo">HIV Negativo</option><option value="Positivo">HIV Positivo</option></select>
-        <button class="btn-save" onclick="salvar()">GRAVAR</button>
-        <button onclick="fechar()" style="width:100%; background:none; border:none; color:gray; margin-top:15px;">Cancelar</button>
+        <h2 style="margin: 0 0 20px 0; color: var(--primary-dark);">Novo Registo</h2>
+        <label style="font-size: 12px; font-weight: bold;">NID</label>
+        <input type="text" id="nid" placeholder="Ex: 01/2024">
+        <label style="font-size: 12px; font-weight: bold;">NOME COMPLETO</label>
+        <input type="text" id="nome" placeholder="Nome do Paciente">
+        <label style="font-size: 12px; font-weight: bold;">TIPO DE TB</label>
+        <select id="tipo">
+            <option value="Sensível">TB Sensível (RS)</option>
+            <option value="Resistente">TB Resistente (RR)</option>
+        </select>
+        <label style="font-size: 12px; font-weight: bold;">ESTADO HIV</label>
+        <select id="hiv">
+            <option value="Negativo">Negativo</option>
+            <option value="Positivo">Positivo</option>
+        </select>
+        <button class="btn-save" onclick="salvarPaciente()">GRAVAR PACIENTE</button>
+        <button onclick="fecharModalRegisto()" style="width:100%; background:none; border:none; color:gray; margin-top:15px; font-weight: 600;">CANCELAR</button>
+    </div>
+</div>
+
+<div id="modalStatus" class="modal">
+    <div class="modal-content">
+        <h2 id="nomeModal" style="margin: 0 0 10px 0;"></h2>
+        <p id="nidModal" style="color: gray; margin-bottom: 20px;"></p>
+        <label>MUDAR ESTADO PARA:</label>
+        <select id="novoEstado">
+            <option value="Ativo">Ativo (Em tratamento)</option>
+            <option value="Curado">Curado</option>
+            <option value="Abandono">Abandono</option>
+            <option value="Óbito">Óbito</option>
+        </select>
+        <button class="btn-save" onclick="confirmarStatus()">ATUALIZAR ESTADO</button>
+        <button class="btn-delete" onclick="eliminarPaciente()">Eliminar Registo Permanentemente</button>
+        <button onclick="fecharModalStatus()" style="width:100%; border:none; background:none; margin-top:10px; color: gray;">Sair</button>
     </div>
 </div>
 
 <script>
-    let dados = JSON.parse(localStorage.getItem('tb_final_v1')) || [];
+    let db = JSON.parse(localStorage.getItem('tb_pro_vFinal')) || [];
+    let idSelecionado = null;
 
-    function abrir() { document.getElementById('modal').style.display='block'; }
-    function fechar() { document.getElementById('modal').style.display='none'; }
+    function abrirModalRegisto() { document.getElementById('modalRegisto').style.display='block'; }
+    function fecharModalRegisto() { document.getElementById('modalRegisto').style.display='none'; }
 
-    function salvar() {
+    function abrirModalStatus(id) {
+        idSelecionado = id;
+        const p = db.find(x => x.id === id);
+        document.getElementById('nomeModal').innerText = p.nome;
+        document.getElementById('nidModal').innerText = "NID: " + p.nid;
+        document.getElementById('novoEstado').value = p.estado;
+        document.getElementById('modalStatus').style.display = 'block';
+    }
+    function fecharModalStatus() { document.getElementById('modalStatus').style.display = 'none'; }
+
+    function salvarPaciente() {
+        const nid = document.getElementById('nid').value;
+        const nome = document.getElementById('nome').value;
+        if(!nid || !nome) return alert("NID e Nome são obrigatórios!");
+
         const p = {
             id: Date.now(),
-            nid: document.getElementById('nid').value,
-            nome: document.getElementById('nome').value,
+            nid: nid,
+            nome: nome,
             tipo: document.getElementById('tipo').value,
             hiv: document.getElementById('hiv').value,
             estado: 'Ativo'
         };
-        if(!p.nome || !p.nid) return alert("Preencha os dados!");
-        dados.push(p);
-        localStorage.setItem('tb_final_v1', JSON.stringify(dados));
-        fechar();
+        db.push(p);
+        localStorage.setItem('tb_pro_vFinal', JSON.stringify(db));
+        fecharModalRegisto();
         renderizar();
+    }
+
+    function confirmarStatus() {
+        const p = db.find(x => x.id === idSelecionado);
+        p.estado = document.getElementById('novoEstado').value;
+        localStorage.setItem('tb_pro_vFinal', JSON.stringify(db));
+        fecharModalStatus();
+        renderizar();
+    }
+
+    function eliminarPaciente() {
+        if(confirm("Tem a certeza que deseja apagar este paciente?")) {
+            db = db.filter(x => x.id !== idSelecionado);
+            localStorage.setItem('tb_pro_vFinal', JSON.stringify(db));
+            fecharModalStatus();
+            renderizar();
+        }
     }
 
     function renderizar() {
@@ -137,26 +183,42 @@
         const busca = document.getElementById('busca').value.toLowerCase();
         lista.innerHTML = '';
         
-        let at=0, cu=0, ab=0, hi=0;
+        let countAt = 0, countCu = 0, countAb = 0, countHi = 0;
 
-        dados.filter(x => x.nome.toLowerCase().includes(busca)).forEach(p => {
-            if(p.estado === 'Ativo') at++;
-            if(p.hiv === 'Positivo') hi++;
-            
+        db.filter(x => x.nome.toLowerCase().includes(busca) || x.nid.toLowerCase().includes(busca)).forEach(p => {
+            // Contadores para o Dashboard
+            if(p.estado === 'Ativo') {
+                countAt++;
+                if(p.hiv === 'Positivo') countHi++;
+            } else if(p.estado === 'Curado') {
+                countCu++;
+            } else if(p.estado === 'Abandono' || p.estado === 'Óbito') {
+                countAb++;
+            }
+
+            // HTML dos Cards da Lista
             lista.innerHTML += `
-                <div class="p-item">
-                    <div style="font-size:11px; color:gray; font-weight:bold">NID: ${p.nid}</div>
+                <div class="p-card" onclick="abrirModalStatus(${p.id})">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="p-nid">NID: ${p.nid}</span>
+                        <span style="font-size:10px; font-weight:800; color:var(--accent-green)">${p.estado.toUpperCase()}</span>
+                    </div>
                     <div class="p-name">${p.nome}</div>
-                    <div>
-                        <span class="tag" style="background:var(--accent-green)">${p.tipo}</span>
-                        <span class="tag" style="background:var(--accent-orange)">HIV: ${p.hiv}</span>
+                    <div style="display:flex; gap:5px;">
+                        <span class="tag" style="background:var(--primary-dark)">${p.tipo}</span>
+                        <span class="tag" style="background:${p.hiv==='Positivo'?'#DD6B20':'#718096'}">HIV: ${p.hiv}</span>
                     </div>
                 </div>
             `;
         });
-        document.getElementById('at').innerText = at;
-        document.getElementById('hi').innerText = hi;
+
+        // Atualizar Dashboard
+        document.getElementById('count-at').innerText = countAt;
+        document.getElementById('count-cu').innerText = countCu;
+        document.getElementById('count-ab').innerText = countAb;
+        document.getElementById('count-hi').innerText = countHi;
     }
+
     renderizar();
 </script>
 </body>
